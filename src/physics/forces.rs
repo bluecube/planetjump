@@ -7,30 +7,27 @@ use geometry::*;
 
 static GRAVITATIONAL_CONSTANT: f32 = 1.0;
 
-fn get_gravity_scalar<T: HasGravityMass, U:HasGravityMass>(x1: &T, x2: &U, distance: f32) -> f32 {
-    let m1 = x1.get_gravity_mass();
-    let m2 = x2.get_gravity_mass();
+pub fn get_gravity_scalar(m1: f32, m2: f32, distance: f32) -> f32 {
     -GRAVITATIONAL_CONSTANT * m1 * m2 / (distance * distance)
-}
-
-fn normalized<T: HasPosition, U: HasPosition>(x1: &T, x2: &U) -> (Vector2D, f32) {
-    (x2.get_position() - x1.get_position()).normalized2()
 }
 
 fn max(a: f32, b: f32) -> f32 {
     if a > b { a } else { b }
 }
 
-pub fn get_gravity_vector<T: HasGravity, U: HasGravity>(x1: &T, x2: &U) -> Vector2D {
-    let (direction, distance) = normalized(x1, x2);
-    direction * get_gravity_scalar(x1, x2, distance)
-}
-
 pub fn get_force_vector<'a, ParticleType: HasParticleProperties>(x1: &Particle<'a, ParticleType>,
-                                                                 x2: &Particle<'a, ParticleType>) -> Vector2D {
-    let (direction, distance) = normalized(x1, x2);
+                                                                 x2: &Particle<'a, ParticleType>,
+                                                                 step: u8) -> Vector2D {
 
-    let gravity = -get_gravity_scalar(x1, x2, distance);
+    // TODO: Convert this to polynomial
+
+    let pos1 = x1.get_position(step);
+    let pos2 = x2.get_position(step);
+    let (direction, distance) = (pos2 - pos1).normalized2();
+
+    let m1 = x1.get_gravity_mass();
+    let m2 = x2.get_gravity_mass();
+    let gravity = -get_gravity_scalar(m1, m2, distance);
 
     let hardness = x1.get_hardness() * x2.get_hardness();
     let d0 = x1.get_d0() + x2.get_d0();

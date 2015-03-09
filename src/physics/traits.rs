@@ -1,7 +1,7 @@
 use geometry::*;
 
 pub trait HasPosition {
-    fn get_position(&self) -> Vector2D;
+    fn get_position(&self, step: u8) -> Vector2D;
 }
 
 pub trait HasGravityMass {

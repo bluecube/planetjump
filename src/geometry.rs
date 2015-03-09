@@ -1,7 +1,7 @@
 use std::ops::*;
 use std::num::Float;
 
-#[derive(PartialEq,Copy,Clone,Debug)]
+#[derive(PartialEq,Copy,Clone,Debug,Default)]
 pub struct Vector2D {
     pub x: f32,
     pub y: f32,
@@ -44,7 +44,6 @@ impl Mul<f32> for Vector2D {
        Vector2D { x: self.x * factor, y: self.y * factor }
     }
 }
-
 
 impl Div<f32> for Vector2D {
     type Output = Vector2D;

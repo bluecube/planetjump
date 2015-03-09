@@ -14,8 +14,9 @@ pub struct BasicParticleType {
 //}
 
 pub struct Particle<'a, ParticleType: HasParticleProperties + 'a> {
-    position: Vector2D,
-    velocity: Vector2D,
+    // Current and previous position switch places.
+    // Velocity doesn't need to be stored explicitly for verlet integration
+    position: [Vector2D; 2],
     particle_type: &'a ParticleType,
 }
 
@@ -38,8 +39,8 @@ impl<'a, T: HasParticleProperties> HasParticleProperties for Particle<'a, T> {
 }
 
 impl<'a, T: HasParticleProperties> HasPosition for Particle<'a, T> {
-    fn get_position(&self) -> Vector2D {
-        self.position
+    fn get_position(&self, step: u8) -> Vector2D {
+        self.position[step as usize]
     }
 }
 
@@ -61,3 +62,15 @@ impl HasParticleProperties for BasicParticleType {
     }
 }
 
+impl<'a, T: HasParticleProperties> Particle<'a, T> {
+    /// One step of Verlet integration on the particle based on the forces.
+    /// Changes the previous position into the next position.
+    pub fn update(&mut self, forces: Vector2D, step: u8) {
+        let next_step = (step + 1) & 1;
+        let acceleration = forces / self.get_inertia_mass();
+        let pos1 = self.position[step as usize];
+        let pos2 = self.position[next_step as usize];
+
+        self.position[next_step as usize] = pos1 * 2.0 - pos2 + acceleration;
+    }
+}
