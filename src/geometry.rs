@@ -1,13 +1,13 @@
 use std::ops::*;
 use std::num::Float;
 
-#[derive(PartialEq,Copy,Clone,Debug,Default)]
+#[derive(PartialEq,Copy,Debug,Default)]
 pub struct Vector2D {
     pub x: f32,
     pub y: f32,
 }
 
-#[derive(PartialEq,Copy,Clone,Debug)]
+#[derive(PartialEq,Copy,Debug)]
 pub struct BoundingBox {
     pub a: Vector2D,
     pub b: Vector2D
@@ -53,7 +53,7 @@ impl Div<f32> for Vector2D {
     }
 }
 
-fn dot(a: Vector2D, b: Vector2D) -> f32 {
+pub fn dot(a: Vector2D, b: Vector2D) -> f32 {
     a.x * b.x + a.y * b.y
 }
 
@@ -76,6 +76,16 @@ impl Vector2D {
 
     pub fn normalized(self) -> Vector2D {
         self / self.len()
+    }
+
+    pub fn min(a: Vector2D, b: Vector2D) -> Vector2D {
+        Vector2D { x: if a.x < b.x { a.x } else { b.x },
+                   y: if a.y < b.y { a.y } else { b.y } }
+    }
+
+    pub fn max(a: Vector2D, b: Vector2D) -> Vector2D {
+        Vector2D { x: if a.x > b.x { a.x } else { b.x },
+                   y: if a.y > b.y { a.y } else { b.y } }
     }
 }
 

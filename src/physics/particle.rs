@@ -13,12 +13,15 @@ pub struct BasicParticleType {
 //    pub texture: ParticleTexture
 //}
 
+#[derive(Debug)]
 pub struct Particle<'a, ParticleType: HasParticleProperties + 'a> {
     // Current and previous position switch places.
     // Velocity doesn't need to be stored explicitly for verlet integration
     position: [Vector2D; 2],
     particle_type: &'a ParticleType,
 }
+
+impl<'a, T:HasParticleProperties> Copy for Particle<'a, T> { }
 
 impl<'a, T:HasParticleProperties> HasGravityMass for Particle<'a, T> {
     fn get_gravity_mass(&self) -> f32 {
