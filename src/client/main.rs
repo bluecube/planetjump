@@ -1,7 +1,10 @@
 extern crate sdl2;
 extern crate game;
 
-use game::gfx::*;
+
+mod gfx;
+
+use gfx::*;
 use game::physics::particle::*;
 
 use sdl2::video::{Window, WindowPos, OPENGL};

@@ -4,5 +4,13 @@ name = "game"
 version = "0.0.1"
 authors = ["Kuba Marek <blue.cube@seznam.cz>"]
 
+[lib]
+name = "game"
+path = "src/game/lib.rs"
+
+[[bin]]
+name = "client"
+path = "src/client/main.rs"
+
 [dependencies.sdl2]
 git = "https://github.com/AngryLawyer/rust-sdl2"
