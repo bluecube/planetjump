@@ -21,18 +21,14 @@ pub fn main() {
         Err(err) => panic!("failed to create window: {}", err)
     };
 
-    let renderer = match Renderer::from_window(window, RenderDriverIndex::Auto, ACCELERATED) {
-        Ok(renderer) => renderer,
-        Err(err) => panic!("failed to create renderer: {}", err)
-    };
-
+    let renderer = Renderer::from_window(window, RenderDriverIndex::Auto, ACCELERATED).unwrap();
     let mut drawer = renderer.drawer();
-    drawer.set_draw_color(Color::RGB(0, 0, 0));
+    drawer.set_draw_color(Color::RGB(43, 53, 56));
 
     let mut running = true;
     let mut event_pump = sdl_context.event_pump();
 
-    let particle = ParticleTexture::new(&renderer, 32, Color::RGBA(255, 0, 0, 128));
+    let particle = ParticleTexture::new(&renderer, 32, Color::RGBA(173, 200, 206, 128));
 
     while running {
         for event in event_pump.poll_iter() {

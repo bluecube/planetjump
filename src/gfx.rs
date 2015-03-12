@@ -17,29 +17,34 @@ impl<'a> ParticleTexture<'a> {
         };
 
         let size = 2 * radius;
-        let radius2 = radius * radius;
+        let zero_threshold = radius * radius;
+        let solid_threshold = zero_threshold / 16;
         let pitch = size * 4;
         let mut pixels = Vec::with_capacity((size * pitch) as usize);
         for y in 0..size {
-            let dy = y - radius;
+            let dy = y as i32 - radius as i32;
             for x in 0..size {
-                let dx = x - radius;
+                let dx = x as i32 - radius as i32;
 
-                let r2 = dx * dx + dy * dy + dx + dy;// + 0.5
+                let r2 = (dx * dx + dy * dy + dx + dy) as u32;
 
-                if r2 < radius2 {
-                    // Why does this have to be reversed? Who knows.
-                    pixels.push(a);
-                    pixels.push(b);
-                    pixels.push(g);
-                    pixels.push(r);
+                let alpha = if (r2 < solid_threshold) {
+                    a
+                }
+                else if r2 < zero_threshold {
+                    let a32 = a as u32;
+                    let tmp1 = zero_threshold - r2;
+                    let tmp2 = zero_threshold - solid_threshold;
+                    ((a32 * tmp1 * tmp1) / (2 * tmp2 * tmp2)) as u8
                 }
                 else {
-                    pixels.push(0);
-                    pixels.push(0);
-                    pixels.push(0);
-                    pixels.push(0);
-                }
+                    0
+                };
+                // Why does this have to be reversed? Who knows.
+                pixels.push(alpha);
+                pixels.push(b);
+                pixels.push(g);
+                pixels.push(r);
             }
         }
 
