@@ -1,13 +1,12 @@
 extern crate sdl2;
 extern crate game;
 
+mod particle;
 
-mod gfx;
-
-use gfx::*;
+use particle::*;
 use game::physics::particle::*;
 
-use sdl2::video::{Window, WindowPos, OPENGL};
+use sdl2::video::{Window, WindowPos, RESIZABLE};
 use sdl2::render::{RenderDriverIndex, ACCELERATED, Renderer};
 use sdl2::pixels::Color;
 use sdl2::keycode::KeyCode;
@@ -19,7 +18,7 @@ pub fn main() {
                                    WindowPos::PosUndefined,
                                    WindowPos::PosUndefined,
                                    800, 600,
-                                   OPENGL) {
+                                   RESIZABLE) {
         Ok(window) => window,
         Err(err) => panic!("failed to create window: {}", err)
     };
@@ -31,7 +30,7 @@ pub fn main() {
     let mut running = true;
     let mut event_pump = sdl_context.event_pump();
 
-    let particle = ParticleTexture::new(&renderer, 32, Color::RGBA(173, 200, 206, 128));
+    let particle = ParticleTexture::new(&renderer, 16, Color::RGBA(173, 200, 206, 128));
 
     while running {
         for event in event_pump.poll_iter() {
