@@ -28,7 +28,7 @@ impl<'a> ParticleTexture<'a> {
 
                 let r2 = (dx * dx + dy * dy + dx + dy) as u32;
 
-                let alpha = if (r2 < solid_threshold) {
+                let alpha = if r2 < solid_threshold {
                     a
                 }
                 else if r2 < zero_threshold {
