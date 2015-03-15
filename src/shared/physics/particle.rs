@@ -1,17 +1,13 @@
 use geometry::*;
 use physics::traits::*;
 
+#[derive(PartialEq,Copy,Debug)]
 pub struct BasicParticleType {
-    inertia_mass: f32,
-    gravity_mass: f32,
-    d0: f32,
-    hardness: f32,
+    pub inertia_mass: f32,
+    pub gravity_mass: f32,
+    pub d0: f32,
+    pub hardness: f32,
 }
-
-//pub struct GfxParticleType {
-//    base: BasicParticleType,
-//    pub texture: ParticleTexture
-//}
 
 #[derive(Debug)]
 pub struct Particle<'a, ParticleType: HasParticleProperties + 'a> {

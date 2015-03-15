@@ -1,12 +1,12 @@
 extern crate shared;
 extern crate sdl2;
 
-mod particle;
 mod gfx;
+mod gfx_particle_type;
 
 use gfx::*;
 
-use particle::*;
+use gfx_particle_type::*;
 
 use sdl2::pixels::Color;
 
@@ -15,13 +15,13 @@ pub fn main() {
     let mut drawer = gfx.get_drawer();
     drawer.set_draw_color(Color::RGB(43, 53, 56));
 
-    let particle = ParticleTexture::new(gfx.get_renderer(), 16, Color::RGBA(173, 200, 206, 128));
+    let particle_types = load_particle_types(gfx.get_renderer(),
+                                             shared::particle_definitions::particle_types());
 
     for (elapsed, fps) in gfx.get_loop_iterator() {
         println!("Fps: {}", fps);
         drawer.clear();
-        particle.draw(&mut drawer, (50, 50));
-        particle.draw(&mut drawer, (70, 60));
+        particle_types[0].draw(&mut drawer, 100, 100);
         drawer.present();
     }
 }
