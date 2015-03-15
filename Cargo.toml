@@ -5,8 +5,8 @@ version = "0.0.1"
 authors = ["Kuba Marek <blue.cube@seznam.cz>"]
 
 [lib]
-name = "game"
-path = "src/game/lib.rs"
+name = "shared"
+path = "src/shared/lib.rs"
 
 [[bin]]
 name = "client"

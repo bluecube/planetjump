@@ -1,4 +1,4 @@
-extern crate game;
+extern crate shared;
 extern crate sdl2;
 
 mod particle;
