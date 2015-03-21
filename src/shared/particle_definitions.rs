@@ -18,5 +18,23 @@ pub fn particle_types() -> Vec<ParticleTypeDefinition> {
             },
             color: (173, 200, 206, 128),
         },
+        ParticleTypeDefinition {
+            base: BasicParticleType {
+                inertia_mass: 1.0,
+                gravity_mass: 1.0,
+                d0: 4.0,
+                hardness: 1.0
+            },
+            color: (206, 0, 0, 128),
+        },
+        ParticleTypeDefinition {
+            base: BasicParticleType {
+                inertia_mass: 1.0,
+                gravity_mass: 1.0,
+                d0: 4.0,
+                hardness: 1.0
+            },
+            color: (0, 206, 0, 128),
+        },
     }
 }

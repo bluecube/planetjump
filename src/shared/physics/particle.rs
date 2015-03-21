@@ -62,6 +62,19 @@ impl HasParticleProperties for BasicParticleType {
 }
 
 impl<'a, T: HasParticleProperties> Particle<'a, T> {
+    pub fn new(position: Vector2D, velocity: Vector2D, step: u8, particle_type: &T) -> Particle<T> {
+        let p = Particle {
+            position:  if step == 0 {
+                    [position, position - velocity]
+                }
+                else {
+                    [position - velocity, position]
+                },
+            particle_type: particle_type
+        };
+        p
+    }
+
     /// One step of Verlet integration on the particle based on the forces.
     /// Changes the previous position into the next position.
     pub fn update(&mut self, forces: Vector2D, step: u8) {
@@ -71,5 +84,9 @@ impl<'a, T: HasParticleProperties> Particle<'a, T> {
         let pos2 = self.position[next_step as usize];
 
         self.position[next_step as usize] = pos1 * 2.0 - pos2 + acceleration;
+    }
+
+    pub fn get_particle_type(&self) -> &T {
+        self.particle_type
     }
 }

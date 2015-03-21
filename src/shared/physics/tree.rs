@@ -20,8 +20,8 @@ struct InnerNodeState {
 pub struct InnerNode<'a, ParticleType: HasParticleProperties + 'a> {
     state: [InnerNodeState; 2],
     gravity_mass: f32,
-    left_child: Box<Tree<'a, ParticleType>>,
-    right_child: Box<Tree<'a, ParticleType>>,
+    pub left_child: Box<Tree<'a, ParticleType>>,
+    pub right_child: Box<Tree<'a, ParticleType>>,
 }
 
 impl<'a, T: HasParticleProperties> Tree<'a, T> {
@@ -93,8 +93,10 @@ impl<'a, T: HasParticleProperties> Tree<'a, T> {
                     return direction * get_gravity_scalar(m1, m2, distance);
                 }
             },
-            &Tree::LeafNode(ref other_particle) =>
-                get_force_vector(particle, other_particle, step)
+            &Tree::LeafNode(ref other_particle) => {
+                let force = get_force_vector(particle, other_particle, step);
+                return force;
+            }
         }
     }
 
@@ -136,12 +138,15 @@ impl<'a, T: HasParticleProperties> Tree<'a, T> {
         let mut pos1 = particles[0].get_position(step);
         let mut pos2 = particles[len - 1].get_position(step);
         let mut separation = 0;
-        let mut m1: f32 = 0.0;
-        let mut m2: f32 = 0.0;
+        let mut m1 = 0.0;
+        let mut m2 = 0.0;
 
         for i in 0..K_MEANS_ITERATIONS {
             let mut new_pos1 = Vector2D::zero();
             let mut new_pos2 = Vector2D::zero();
+            separation = 0;
+            m1 = 0.0;
+            m2 = 0.0;
             for j in 0..particles.len() {
                 let particle_position = particles[j].get_position(step);
                 let particle_mass = particles[j].get_gravity_mass();

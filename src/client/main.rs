@@ -1,14 +1,36 @@
 extern crate shared;
 extern crate sdl2;
+extern crate rand;
 
 mod gfx;
 mod gfx_particle_type;
+mod particle_drawing;
 
 use gfx::*;
-
 use gfx_particle_type::*;
-
+use particle_drawing::*;
+use shared::geometry::*;
+use shared::physics::particle::*;
+use shared::physics::tree::*;
 use sdl2::pixels::Color;
+use rand::*;
+
+fn add_particles<'a>(count: u32,
+                     position: Vector2D, pos_range: f32,
+                     velocity: Vector2D, vel_range: f32,
+                     particle_type: &'a GfxParticleType<'a>,
+                     out: &mut Vec<Particle<'a, GfxParticleType<'a>>>) {
+    let mut rng = weak_rng();
+
+    for i in 0..count {
+        let pos = Vector2D::random_radius(&mut rng, position, pos_range);
+        let vel = Vector2D::random_radius(&mut rng, velocity, vel_range);
+
+        let p = Particle::<'a, GfxParticleType<'a>>::new(pos, vel, 0, particle_type);
+
+        out.push(p);
+    }
+}
 
 pub fn main() {
     let gfx = Gfx::new("Game");
@@ -18,10 +40,34 @@ pub fn main() {
     let particle_types = load_particle_types(gfx.get_renderer(),
                                              shared::particle_definitions::particle_types());
 
+    let mut particles = Vec::<Particle<GfxParticleType>>::new();
+    add_particles(100,
+                  Vector2D::new(200.0, 200.0), 50.0,
+                  Vector2D::zero(), 0.01,
+                  &particle_types[0],
+                  &mut particles);
+    add_particles(50,
+                  Vector2D::new(400.0, 200.0), 30.0,
+                  Vector2D::new(0.0, 1.0), 0.01,
+                  &particle_types[1],
+                  &mut particles);
+    add_particles(20,
+                  Vector2D::new(300.0, 100.0), 20.0,
+                  Vector2D::new(0.7, 0.7), 0.01,
+                  &particle_types[2],
+                  &mut particles);
+
+    let mut tree = Tree::<GfxParticleType>::new(particles, 0);
+    let mut step = 0;
+
+//    tree.update(step);
+
     for (elapsed, fps) in gfx.get_loop_iterator() {
-        println!("Fps: {}", fps);
         drawer.clear();
-        particle_types[0].draw(&mut drawer, 100, 100);
+        tree.update(step);
+        draw_particles(&tree, step, &mut drawer);
         drawer.present();
+
+        step = 1 - step;
     }
 }

@@ -12,5 +12,6 @@ path = "src/shared/lib.rs"
 name = "client"
 path = "src/client/main.rs"
 
-[dependencies.sdl2]
-git = "https://github.com/AngryLawyer/rust-sdl2"
+[dependencies]
+rand = "0.2.0"
+sdl2 = "0.0.31"

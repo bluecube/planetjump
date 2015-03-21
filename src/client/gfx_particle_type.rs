@@ -9,7 +9,7 @@ use shared::physics::traits::*;
 
 use shared::particle_definitions::*;
 
-struct GfxParticleType<'a> {
+pub struct GfxParticleType<'a> {
     base: BasicParticleType,
     texture: Texture<'a>,
     half_texture_size: u32
@@ -100,6 +100,9 @@ impl<'a> GfxParticleType<'a> {
 
     pub fn draw(&self, drawer: &mut RenderDrawer, x: i32, y: i32) {
         let r = self.half_texture_size as i32;
+        if x < 0 || x > 1000 || y < 0 || y > 1000 {
+            return;
+        }
         drawer.copy(&self.texture, None, Some(Rect::new(x - r, y - r, 2 * r, 2 * r)));
     }
 }

@@ -1,5 +1,8 @@
+extern crate rand;
+
 use std::ops::*;
 use std::num::Float;
+use self::rand::Rng;
 
 #[derive(PartialEq,Copy,Debug,Default)]
 pub struct Vector2D {
@@ -58,6 +61,28 @@ pub fn dot(a: Vector2D, b: Vector2D) -> f32 {
 }
 
 impl Vector2D {
+    pub fn new(x: f32, y: f32) -> Vector2D {
+        Vector2D { x: x, y: y }
+    }
+
+    pub fn random_box<R: Rng>(rng: &mut R,
+                              center: Vector2D,
+                              x_size: f32, y_size: f32) -> Vector2D {
+        Vector2D { x: rng.gen_range(center.x - x_size, center.x + x_size),
+                   y: rng.gen_range(center.y - y_size, center.y + y_size) }
+    }
+
+    pub fn random_radius<R: Rng>(rng: &mut R,
+                                 center: Vector2D, r: f32) -> Vector2D {
+        let r2 = r * r;
+        loop {
+            let ret = Vector2D::random_box(rng, center, r, r);
+            if (ret - center).len_squared() <= r2 {
+                return ret;
+            }
+        }
+    }
+
     pub fn zero() -> Vector2D {
         Vector2D { x: 0.0, y: 0.0 }
     }

@@ -2,6 +2,8 @@ use physics::traits::*;
 use physics::particle::*;
 use geometry::*;
 
+static EPSILON: f32 = 1e-3;
+
 // Everywhere in this module positive force is separating the particles,
 // negative force is pulling them together.
 
@@ -23,6 +25,11 @@ pub fn get_force_vector<'a, ParticleType: HasParticleProperties>(x1: &Particle<'
 
     let pos1 = x1.get_position(step);
     let pos2 = x2.get_position(step);
+
+    if pos1 == pos2 {
+        return Vector2D::zero();
+    }
+
     let (direction, distance) = (pos2 - pos1).normalized2();
 
     let m1 = x1.get_gravity_mass();
