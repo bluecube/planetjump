@@ -11,8 +11,8 @@ pub fn particle_types() -> Vec<ParticleTypeDefinition> {
     vec!{
         ParticleTypeDefinition {
             base: BasicParticleType {
-                inertia_mass: 1.0,
-                gravity_mass: 1.0,
+                inertia_mass: 5.0,
+                gravity_mass: 5.0,
                 d0: 4.0,
                 hardness: 1.0
             },
@@ -20,8 +20,8 @@ pub fn particle_types() -> Vec<ParticleTypeDefinition> {
         },
         ParticleTypeDefinition {
             base: BasicParticleType {
-                inertia_mass: 1.0,
-                gravity_mass: 1.0,
+                inertia_mass: 5.0,
+                gravity_mass: 5.0,
                 d0: 4.0,
                 hardness: 1.0
             },
@@ -29,8 +29,8 @@ pub fn particle_types() -> Vec<ParticleTypeDefinition> {
         },
         ParticleTypeDefinition {
             base: BasicParticleType {
-                inertia_mass: 1.0,
-                gravity_mass: 1.0,
+                inertia_mass: 5.0,
+                gravity_mass: 5.0,
                 d0: 4.0,
                 hardness: 1.0
             },

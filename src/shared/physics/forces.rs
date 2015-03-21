@@ -4,19 +4,20 @@ use geometry::*;
 
 static EPSILON: f32 = 1e-3;
 
-// Everywhere in this module positive force is separating the particles,
-// negative force is pulling them together.
+// Everywhere in this module negative force is separating the particles,
+// positive force is pulling them together.
 
-static GRAVITATIONAL_CONSTANT: f32 = 1.0;
+static GRAVITATIONAL_CONSTANT: f32 = 0.1;
 
 pub fn get_gravity_scalar(m1: f32, m2: f32, distance: f32) -> f32 {
-    -GRAVITATIONAL_CONSTANT * m1 * m2 / (distance * distance)
+    GRAVITATIONAL_CONSTANT * m1 * m2 / (distance * distance)
 }
 
-fn max(a: f32, b: f32) -> f32 {
-    if a > b { a } else { b }
+fn min(a: f32, b: f32) -> f32 {
+    if a < b { a } else { b }
 }
 
+/// Force that x2 exterts on x1
 pub fn get_force_vector<'a, ParticleType: HasParticleProperties>(x1: &Particle<'a, ParticleType>,
                                                                  x2: &Particle<'a, ParticleType>,
                                                                  step: u8) -> Vector2D {
@@ -34,11 +35,12 @@ pub fn get_force_vector<'a, ParticleType: HasParticleProperties>(x1: &Particle<'
 
     let m1 = x1.get_gravity_mass();
     let m2 = x2.get_gravity_mass();
-    let gravity = -get_gravity_scalar(m1, m2, distance);
+    let gravity = get_gravity_scalar(m1, m2, distance);
 
     let hardness = x1.get_hardness() * x2.get_hardness();
     let d0 = x1.get_d0() + x2.get_d0();
-    let close_forces = hardness * (d0 - distance);
+    let close_forces = hardness * (distance - d0);
 
-    direction * max(gravity, close_forces)
+    //direction * min(gravity, close_forces)
+    direction * gravity
 }

@@ -68,8 +68,19 @@ impl Vector2D {
     pub fn random_box<R: Rng>(rng: &mut R,
                               center: Vector2D,
                               x_size: f32, y_size: f32) -> Vector2D {
-        Vector2D { x: rng.gen_range(center.x - x_size, center.x + x_size),
-                   y: rng.gen_range(center.y - y_size, center.y + y_size) }
+        let x = if x_size == 0.0 {
+            center.x
+        }
+        else {
+            rng.gen_range(center.x - x_size, center.x + x_size)
+        };
+        let y = if y_size == 0.0 {
+            center.y
+        }
+        else {
+            rng.gen_range(center.y - y_size, center.y + y_size)
+        };
+        Vector2D::new(x, y)
     }
 
     pub fn random_radius<R: Rng>(rng: &mut R,

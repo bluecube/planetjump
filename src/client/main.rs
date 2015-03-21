@@ -43,19 +43,29 @@ pub fn main() {
     let mut particles = Vec::<Particle<GfxParticleType>>::new();
     add_particles(100,
                   Vector2D::new(200.0, 200.0), 50.0,
-                  Vector2D::zero(), 0.01,
+                  Vector2D::zero(), 0.1,
                   &particle_types[0],
                   &mut particles);
     add_particles(50,
                   Vector2D::new(400.0, 200.0), 30.0,
-                  Vector2D::new(0.0, 1.0), 0.01,
+                  Vector2D::new(0.0, 2.0), 0.1,
                   &particle_types[1],
                   &mut particles);
     add_particles(20,
                   Vector2D::new(300.0, 100.0), 20.0,
-                  Vector2D::new(0.7, 0.7), 0.01,
+                  Vector2D::new(1.0, 1.0), 0.1,
                   &particle_types[2],
                   &mut particles);
+//    add_particles(1,
+//                  Vector2D::new(200.0, 200.0), 0.0,
+//                  Vector2D::zero(), 0.0,
+//                  &particle_types[0],
+//                  &mut particles);
+//    add_particles(1,
+//                  Vector2D::new(210.0, 200.0), 0.0,
+//                  Vector2D::new(0.0, 0.05), 0.0,
+//                  &particle_types[1],
+//                  &mut particles);
 
     let mut tree = Tree::<GfxParticleType>::new(particles, 0);
     let mut step = 0;
