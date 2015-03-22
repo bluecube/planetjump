@@ -2,6 +2,9 @@ use geometry::*;
 use physics::traits::*;
 use physics::forces::FRICTION;
 
+// Time step.
+static DT: f32 = 0.01;
+
 #[derive(PartialEq,Copy,Debug)]
 pub struct BasicParticleType {
     pub inertia_mass: f32,
@@ -66,10 +69,10 @@ impl<'a, T: HasParticleProperties> Particle<'a, T> {
     pub fn new(position: Vector2D, velocity: Vector2D, step: u8, particle_type: &T) -> Particle<T> {
         let p = Particle {
             position:  if step == 0 {
-                    [position, position - velocity]
+                    [position, position - velocity * DT]
                 }
                 else {
-                    [position - velocity, position]
+                    [position - velocity * DT, position]
                 },
             particle_type: particle_type
         };
@@ -85,7 +88,7 @@ impl<'a, T: HasParticleProperties> Particle<'a, T> {
 
         self.position[next_step as usize] = pos1 * (2.0 - FRICTION) -
                                             pos2 * (1.0 - FRICTION) +
-                                            forces / self.get_inertia_mass();
+                                            forces * (DT * DT  / self.get_inertia_mass());
     }
 
     pub fn get_particle_type(&self) -> &T {

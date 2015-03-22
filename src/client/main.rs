@@ -41,25 +41,20 @@ pub fn main() {
                                              shared::particle_definitions::particle_types());
 
     let mut particles = Vec::<Particle<GfxParticleType>>::new();
-    add_particles(1000,
+    add_particles(100,
                   Vector2D::new(400.0, 400.0), 40.0,
-                  Vector2D::zero(), 0.1,
+                  Vector2D::new(0.0, -1.0), 0.1,
                   &particle_types[0],
                   &mut particles);
-    add_particles(100,
-                  Vector2D::new(200.0, 380.0), 15.0,
-                  Vector2D::new(5.0, 0.0), 0.0,
-                  &particle_types[1],
-                  &mut particles);
-    add_particles(500,
+    add_particles(70,
                   Vector2D::new(600.0, 400.0), 20.0,
-                  Vector2D::new(0.0, 6.0), 0.1,
-                  &particle_types[1],
+                  Vector2D::new(0.0, 20.0), 0.1,
+                  &particle_types[0],
                   &mut particles);
-    add_particles(200,
-                  Vector2D::new(700.0, 100.0), 20.0,
-                  Vector2D::new(0.5, 2.0), 0.1,
-                  &particle_types[2],
+    add_particles(50,
+                  Vector2D::new(700.0, 300.0), 20.0,
+                  Vector2D::new(5.0, 10.0), 0.1,
+                  &particle_types[0],
                   &mut particles);
 //    add_particles(1,
 //                  Vector2D::new(200.0, 200.0), 0.0,

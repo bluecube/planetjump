@@ -15,3 +15,6 @@ path = "src/client/main.rs"
 [dependencies]
 rand = "0.2.0"
 sdl2 = "0.0.31"
+
+[profile.release]
+lto = true

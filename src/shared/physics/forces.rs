@@ -8,7 +8,7 @@ use geometry::*;
 static GRAVITATIONAL_CONSTANT: f32 = 0.5;
 
 /// This fraction of velocity is substracted from particle speed every tick.
-pub static FRICTION: f32 = 1e-3;
+pub static FRICTION: f32 = 1e-4;
 
 pub fn get_gravity_scalar(m1: f32, m2: f32, distance: f32) -> f32 {
     GRAVITATIONAL_CONSTANT * m1 * m2 / (distance * distance)
