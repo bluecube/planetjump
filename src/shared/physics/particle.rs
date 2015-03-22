@@ -1,5 +1,6 @@
 use geometry::*;
 use physics::traits::*;
+use physics::forces::FRICTION;
 
 #[derive(PartialEq,Copy,Debug)]
 pub struct BasicParticleType {
@@ -79,11 +80,12 @@ impl<'a, T: HasParticleProperties> Particle<'a, T> {
     /// Changes the previous position into the next position.
     pub fn update(&mut self, forces: Vector2D, step: u8) {
         let next_step = (step + 1) & 1;
-        let acceleration = forces / self.get_inertia_mass();
         let pos1 = self.position[step as usize];
         let pos2 = self.position[next_step as usize];
 
-        self.position[next_step as usize] = pos1 * 2.0 - pos2 + acceleration;
+        self.position[next_step as usize] = pos1 * (2.0 - FRICTION) -
+                                            pos2 * (1.0 - FRICTION) +
+                                            forces / self.get_inertia_mass();
     }
 
     pub fn get_particle_type(&self) -> &T {

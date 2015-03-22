@@ -1,13 +1,14 @@
 use physics::traits::*;
-use physics::particle::*;
+use physics::particle::Particle;
 use geometry::*;
-
-static EPSILON: f32 = 1e-3;
 
 // Everywhere in this module negative force is separating the particles,
 // positive force is pulling them together.
 
-static GRAVITATIONAL_CONSTANT: f32 = 0.1;
+static GRAVITATIONAL_CONSTANT: f32 = 0.5;
+
+/// This fraction of velocity is substracted from particle speed every tick.
+pub static FRICTION: f32 = 1e-3;
 
 pub fn get_gravity_scalar(m1: f32, m2: f32, distance: f32) -> f32 {
     GRAVITATIONAL_CONSTANT * m1 * m2 / (distance * distance)
@@ -41,6 +42,5 @@ pub fn get_force_vector<'a, ParticleType: HasParticleProperties>(x1: &Particle<'
     let d0 = x1.get_d0() + x2.get_d0();
     let close_forces = hardness * (distance - d0);
 
-    //direction * min(gravity, close_forces)
-    direction * gravity
+    direction * min(gravity, close_forces)
 }

@@ -6,8 +6,7 @@ use sdl2::render::{RenderDriverIndex, ACCELERATED, Renderer, RenderDrawer};
 use sdl2::keycode::KeyCode;
 use sdl2::event::Event;
 
-//static FPS: u32 = 60;
-static FPS: u32 = 1;
+static FPS: u32 = 60;
 static FPS_SMOOTHING: f32 = 0.9;
 
 pub struct Gfx {
