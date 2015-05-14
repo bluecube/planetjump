@@ -65,7 +65,7 @@ impl HasParticleProperties for BasicParticleType {
 
 impl<'a, T: HasParticleProperties> Particle<'a, T> {
     pub fn new(position: Vector2D, velocity: Vector2D, step: u8, particle_type: &T) -> Particle<T> {
-        let p = Particle {
+        Particle {
             position:  if step == 0 {
                     [position, position - velocity * DT]
                 }
@@ -73,8 +73,7 @@ impl<'a, T: HasParticleProperties> Particle<'a, T> {
                     [position - velocity * DT, position]
                 },
             particle_type: particle_type
-        };
-        p
+        }
     }
 
     /// One step of Verlet integration on the particle based on the forces.

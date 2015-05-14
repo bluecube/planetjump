@@ -1,8 +1,8 @@
 extern crate rand;
 
 use std::ops::*;
-use std::num::Float;
 use self::rand::Rng;
+use std::f32;
 
 #[derive(PartialEq,Clone,Copy,Debug,Default)]
 pub struct Vector2D {
@@ -123,10 +123,53 @@ impl Vector2D {
         Vector2D { x: if a.x > b.x { a.x } else { b.x },
                    y: if a.y > b.y { a.y } else { b.y } }
     }
+
+    pub fn get(self, coord: u32) -> f32 {
+        if coord == 0 {
+            self.x
+        }
+        else {
+            self.y
+        }
+    }
+
+    pub fn set(&mut self, coord: u32, value: f32) {
+        if coord == 0 {
+            self.x = value;
+        }
+        else {
+            self.y = value;
+        }
+    }
 }
 
 impl BoundingBox {
+    pub fn empty() -> BoundingBox {
+        BoundingBox { a: Vector2D::new(f32::INFINITY, f32::INFINITY),
+                      b: Vector2D::new(f32::NEG_INFINITY, f32::NEG_INFINITY) }
+    }
+
+    pub fn from_radius(center: Vector2D, radius: f32) -> BoundingBox {
+        let half_diagonal = Vector2D::new(radius, radius);
+        BoundingBox { a: center - half_diagonal,
+                      b: center + half_diagonal }
+    }
+
     pub fn get_center(&self) -> Vector2D {
         (self.a + self.b) * 0.5
+    }
+
+    pub fn get_size(&self) -> Vector2D {
+        self.b - self.a
+    }
+
+    pub fn combine(a: &BoundingBox, b: &BoundingBox) -> BoundingBox {
+        BoundingBox { a: Vector2D::min(a.a, b.a),
+                      b: Vector2D::max(a.b, b.b) }
+    }
+
+    pub fn expand(&mut self, coord: Vector2D) {
+        self.a = Vector2D::min(self.a, coord);
+        self.b = Vector2D::max(self.b, coord);
     }
 }
