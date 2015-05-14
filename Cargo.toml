@@ -13,8 +13,8 @@ name = "client"
 path = "src/client/main.rs"
 
 [dependencies]
-rand = "0.2.0"
-sdl2 = "0.0.31"
+rand = "0.3.7"
+sdl2 = "0.2.3"
 
 [profile.release]
 lto = true

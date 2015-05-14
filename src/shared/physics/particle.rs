@@ -5,7 +5,7 @@ use physics::forces::FRICTION;
 // Time step.
 static DT: f32 = 0.01;
 
-#[derive(PartialEq,Copy,Debug)]
+#[derive(PartialEq,Clone,Copy,Debug)]
 pub struct BasicParticleType {
     pub inertia_mass: f32,
     pub gravity_mass: f32,
@@ -13,15 +13,13 @@ pub struct BasicParticleType {
     pub hardness: f32,
 }
 
-#[derive(Debug)]
+#[derive(Debug,Clone,Copy)]
 pub struct Particle<'a, ParticleType: HasParticleProperties + 'a> {
     // Current and previous position switch places.
     // Velocity doesn't need to be stored explicitly for verlet integration
     position: [Vector2D; 2],
     particle_type: &'a ParticleType,
 }
-
-impl<'a, T:HasParticleProperties> Copy for Particle<'a, T> { }
 
 impl<'a, T:HasParticleProperties> HasGravityMass for Particle<'a, T> {
     fn get_gravity_mass(&self) -> f32 {

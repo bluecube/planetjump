@@ -4,13 +4,13 @@ use std::ops::*;
 use std::num::Float;
 use self::rand::Rng;
 
-#[derive(PartialEq,Copy,Debug,Default)]
+#[derive(PartialEq,Clone,Copy,Debug,Default)]
 pub struct Vector2D {
     pub x: f32,
     pub y: f32,
 }
 
-#[derive(PartialEq,Copy,Debug)]
+#[derive(PartialEq,Clone,Copy,Debug)]
 pub struct BoundingBox {
     pub a: Vector2D,
     pub b: Vector2D
