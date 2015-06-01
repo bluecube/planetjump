@@ -1,6 +1,6 @@
 [package]
 
-name = "game"
+name = "planetjump"
 version = "0.0.1"
 authors = ["Kuba Marek <blue.cube@seznam.cz>"]
 
