@@ -1,8 +1,9 @@
 use std::iter::Iterator;
 
-use sdl2::*;
-use sdl2::video::{Window, WindowPos, RESIZABLE};
-use sdl2::render::{RenderDriverIndex, ACCELERATED, Renderer, RenderDrawer};
+use sdl2::sdl::{init, InitBuilder};
+use sdl2::timer;
+use sdl2::video::{Window, WindowBuilder};
+use sdl2::render::{Renderer, RendererBuilder, RenderDrawer};
 use sdl2::keycode::KeyCode;
 use sdl2::event::{Event, EventPump};
 
@@ -22,16 +23,15 @@ struct GfxLoopIterator<'a> {
 
 impl<'a> Gfx<'a> {
     pub fn new(title: &str) -> Gfx<'a> {
-        let sdl = init(INIT_VIDEO).unwrap();
-        let window = Window::new(&sdl,
-                                 title,
-                                 WindowPos::PosUndefined,
-                                 WindowPos::PosUndefined,
-                                 800, 600,
-                                 RESIZABLE).unwrap();
-        let renderer = Renderer::from_window(window,
-                                             RenderDriverIndex::Auto,
-                                             ACCELERATED).unwrap();
+        let sdl = init().video().unwrap();
+        let window = WindowBuilder::new(&sdl, title, 800, 600)
+            .resizable()
+            .build().unwrap();
+        let renderer = RendererBuilder::new(window)
+            .accelerated()
+            .present_vsync()
+            .build().unwrap();
+
         Gfx { sdl: sdl,
               renderer: renderer }
     }
