@@ -5,8 +5,6 @@ use physics::forces::*;
 
 use std::cell::UnsafeCell;
 
-static K_MEANS_ITERATIONS: usize = 4;
-
 pub enum Tree<'a, ParticleType: HasParticleProperties + 'a> {
     InnerNode (InnerNode<'a, ParticleType>),
     LeafNode (Particle<'a, ParticleType>)
@@ -111,7 +109,7 @@ impl<'a, T: HasParticleProperties> Tree<'a, T> {
     }
 
     pub fn new(mut particles: Vec<Particle<'a, T>>, step: u8) -> Tree<'a, T> {
-        Tree::build(particles.as_mut_slice(), step)
+        Tree::build(&mut particles[..], step)
     }
 
     fn build(particles: &mut [Particle<'a, T>], step: u8) -> Tree<'a, T> {

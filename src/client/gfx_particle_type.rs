@@ -1,5 +1,3 @@
-use std::num::Float;
-
 use sdl2::render::{Renderer, RenderDrawer, Texture, BlendMode};
 use sdl2::pixels::PixelFormatEnum;
 use sdl2::rect::*;
@@ -9,19 +7,19 @@ use shared::physics::traits::*;
 
 use shared::particle_definitions::*;
 
-pub struct GfxParticleType<'a> {
+pub struct GfxParticleType {
     base: BasicParticleType,
-    texture: Texture<'a>,
+    texture: Texture,
     half_texture_size: u32
 }
 
-impl<'a> HasGravityMass for GfxParticleType<'a> {
+impl HasGravityMass for GfxParticleType {
     fn get_gravity_mass(&self) -> f32 {
         self.base.get_gravity_mass()
     }
 }
 
-impl<'a> HasParticleProperties for GfxParticleType<'a> {
+impl HasParticleProperties for GfxParticleType {
     fn get_inertia_mass(&self) -> f32 {
         self.base.get_inertia_mass()
     }
@@ -33,8 +31,8 @@ impl<'a> HasParticleProperties for GfxParticleType<'a> {
     }
 }
 
-impl<'a> GfxParticleType<'a> {
-    fn new(renderer: &'a Renderer, definition: ParticleTypeDefinition) -> GfxParticleType<'a> {
+impl GfxParticleType {
+    fn new<'a>(renderer: &'a Renderer, definition: ParticleTypeDefinition) -> GfxParticleType {
         let (texture, half_size) = GfxParticleType::make_texture(renderer,
                                                                  definition.base.get_d0(),
                                                                  definition.color);
@@ -50,7 +48,7 @@ impl<'a> GfxParticleType<'a> {
     /// Returns tuple with the (square) texture and half of its size (offset for drawing).
     ///
     /// Panicks if texture creation fails.
-    fn make_texture(renderer: &'a Renderer, size: f32, color: (u8, u8, u8, u8)) -> (Texture<'a>, u32) {
+    fn make_texture<'a>(renderer: &'a Renderer, size: f32, color: (u8, u8, u8, u8)) -> (Texture, u32) {
         let (r, g, b, a) = color;
         let inside_radius = size.round() as u32;
         let glow_radius = 4 * inside_radius;
@@ -108,6 +106,6 @@ impl<'a> GfxParticleType<'a> {
 }
 
 pub fn load_particle_types<'a>(renderer: &'a Renderer,
-                               definitions: Vec<ParticleTypeDefinition>) -> Vec<GfxParticleType<'a>> {
+                               definitions: Vec<ParticleTypeDefinition>) -> Vec<GfxParticleType> {
     definitions.into_iter().map(|definition| GfxParticleType::new(renderer, definition)).collect()
 }

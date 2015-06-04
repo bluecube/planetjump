@@ -13,12 +13,20 @@ pub struct BasicParticleType {
     pub hardness: f32,
 }
 
-#[derive(Debug,Clone,Copy)]
+#[derive(Debug)]
 pub struct Particle<'a, ParticleType: HasParticleProperties + 'a> {
     // Current and previous position switch places.
     // Velocity doesn't need to be stored explicitly for verlet integration
     position: [Vector2D; 2],
     particle_type: &'a ParticleType,
+}
+
+impl<'a, T: HasParticleProperties + 'a> Copy for Particle<'a, T> {}
+
+impl<'a, T: HasParticleProperties + 'a> Clone for Particle<'a, T> {
+    fn clone(&self) -> Self {
+        *self
+    }
 }
 
 impl<'a, T:HasParticleProperties> HasGravityMass for Particle<'a, T> {

@@ -18,24 +18,22 @@ use rand::*;
 fn add_particles<'a>(count: u32,
                      position: Vector2D, pos_range: f32,
                      velocity: Vector2D, vel_range: f32,
-                     particle_type: &'a GfxParticleType<'a>,
-                     out: &mut Vec<Particle<'a, GfxParticleType<'a>>>) {
+                     particle_type: &'a GfxParticleType,
+                     out: &mut Vec<Particle<'a, GfxParticleType>>) {
     let mut rng = weak_rng();
 
     for i in 0..count {
         let pos = Vector2D::random_radius(&mut rng, position, pos_range);
         let vel = Vector2D::random_radius(&mut rng, velocity, vel_range);
 
-        let p = Particle::<'a, GfxParticleType<'a>>::new(pos, vel, 0, particle_type);
+        let p = Particle::<'a, GfxParticleType>::new(pos, vel, 0, particle_type);
 
         out.push(p);
     }
 }
 
 pub fn main() {
-    let gfx = Gfx::new("Game");
-    let mut drawer = gfx.get_drawer();
-    drawer.set_draw_color(Color::RGB(43, 53, 56));
+    let mut gfx = Gfx::new("planetjump");
 
     let particle_types = load_particle_types(gfx.get_renderer(),
                                              shared::particle_definitions::particle_types());
@@ -71,6 +69,9 @@ pub fn main() {
     let mut step = 0;
 
 //    tree.update(step);
+
+    let mut drawer = gfx.get_drawer();
+    drawer.set_draw_color(Color::RGB(43, 53, 56));
 
     for (elapsed, fps) in gfx.get_loop_iterator() {
         drawer.clear();

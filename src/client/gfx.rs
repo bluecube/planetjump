@@ -4,26 +4,27 @@ use sdl2::*;
 use sdl2::video::{Window, WindowPos, RESIZABLE};
 use sdl2::render::{RenderDriverIndex, ACCELERATED, Renderer, RenderDrawer};
 use sdl2::keycode::KeyCode;
-use sdl2::event::Event;
+use sdl2::event::{Event, EventPump};
 
 static FPS: u32 = 60;
 static FPS_SMOOTHING: f32 = 0.9;
 
-pub struct Gfx {
+pub struct Gfx<'a> {
     sdl: Sdl,
-    renderer: Renderer,
+    renderer: Renderer<'a>,
 }
 
 struct GfxLoopIterator<'a> {
-    sdl: &'a Sdl,
+    event_pump: EventPump<'a>,
     last_tick: u32,
     fps: f32,
 }
 
-impl Gfx {
-    pub fn new(title: &str) -> Gfx {
+impl<'a> Gfx<'a> {
+    pub fn new(title: &str) -> Gfx<'a> {
         let sdl = init(INIT_VIDEO).unwrap();
-        let window = Window::new(title,
+        let window = Window::new(&sdl,
+                                 title,
                                  WindowPos::PosUndefined,
                                  WindowPos::PosUndefined,
                                  800, 600,
@@ -35,16 +36,16 @@ impl Gfx {
               renderer: renderer }
     }
 
-    pub fn get_renderer(&self) -> &Renderer {
+    pub fn get_renderer(&self) -> &Renderer<'a> {
         &self.renderer
     }
 
-    pub fn get_drawer<'a>(&'a self) -> RenderDrawer<'a> {
+    pub fn get_drawer<'b>(&'b mut self) -> RenderDrawer<'b> {
         self.renderer.drawer()
     }
 
     pub fn get_loop_iterator(&self) -> GfxLoopIterator {
-        GfxLoopIterator { sdl: &self.sdl,
+        GfxLoopIterator { event_pump: self.sdl.event_pump(),
                           last_tick: timer::get_ticks(),
                           fps: FPS as f32 }
     }
@@ -69,7 +70,7 @@ impl<'a> Iterator for GfxLoopIterator<'a> {
         let fps_raw = 1000.0 / (elapsed2 as f32);
         self.fps = (1.0 - FPS_SMOOTHING) * fps_raw + FPS_SMOOTHING * self.fps;
 
-        for event in self.sdl.event_pump().poll_iter() {
+        for event in self.event_pump.poll_iter() {
             match event {
                 Event::Quit {..} | Event::KeyDown { keycode: KeyCode::Escape, .. } => {
                     return None
