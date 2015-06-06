@@ -123,22 +123,27 @@ impl Vector2D {
         Vector2D { x: if a.x > b.x { a.x } else { b.x },
                    y: if a.y > b.y { a.y } else { b.y } }
     }
+}
 
-    pub fn get(self, coord: u32) -> f32 {
-        if coord == 0 {
-            self.x
+impl Index<usize> for Vector2D {
+    type Output = f32;
+    fn index<'a>(&'a self, index: usize) -> &'a f32 {
+        if index == 0 {
+            &self.x
         }
         else {
-            self.y
+            &self.y
         }
     }
+}
 
-    pub fn set(&mut self, coord: u32, value: f32) {
-        if coord == 0 {
-            self.x = value;
+impl IndexMut<usize> for Vector2D {
+    fn index_mut<'a>(&'a mut self, index: usize) -> &'a mut f32 {
+        if index == 0 {
+            &mut self.x
         }
         else {
-            self.y = value;
+            &mut self.y
         }
     }
 }

@@ -128,8 +128,8 @@ impl<'a, T: HasParticleProperties> Tree<'a, T> {
         }
 
         let bbox_size = bbox.get_size();
-        let split_axis = if bbox_size.x > bbox_size.y { 0 } else { 1 };
-        let median_estimate = (bbox.a.get(split_axis) + bbox.b.get(split_axis)) / 2.0;
+        let split_axis = (if bbox_size.x > bbox_size.y { 0 } else { 1 }) as usize;
+        let median_estimate = (bbox.a[split_axis] + bbox.b[split_axis]) / 2.0;
 
         median_split(particles, step, split_axis);
         let (left_particles, right_particles) = particles.split_at_mut(len / 2);
@@ -159,7 +159,7 @@ fn must_open<T>(particle: &Particle<T>, node: &InnerNode<T>, distance: f32, step
 
 fn median_split<'a, T: HasParticleProperties>(particles: &mut [Particle<'a, T>],
                                               step: u8,
-                                              split_axis: u32) {
+                                              split_axis: usize) {
     let mut low = 0;
     let mut high = particles.len() - 1;
     let target_index = particles.len() / 2;
@@ -167,16 +167,16 @@ fn median_split<'a, T: HasParticleProperties>(particles: &mut [Particle<'a, T>],
     assert!(low < high);
 
     loop {
-        let mut pivot = (particles[low].get_position(step).get(split_axis) +
-                         particles[high].get_position(step).get(split_axis)) / 2.0;
+        let mut pivot = (particles[low].get_position(step)[split_axis] +
+                         particles[high].get_position(step)[split_axis]) / 2.0;
         let mut s_low = low;
         let mut s_high = high;
 
         while s_low < s_high {
-            while particles[s_low].get_position(step).get(split_axis) <= pivot && s_low < s_high {
+            while particles[s_low].get_position(step)[split_axis] <= pivot && s_low < s_high {
                 s_low += 1;
             }
-            while particles[s_high].get_position(step).get(split_axis) >= pivot && s_low < s_high {
+            while particles[s_high].get_position(step)[split_axis] >= pivot && s_low < s_high {
                 s_high -= 1;
             }
 
