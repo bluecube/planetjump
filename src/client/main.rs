@@ -2,27 +2,29 @@ extern crate shared;
 extern crate sdl2;
 extern crate rand;
 
-mod gfx;
 mod gfx_particle_type;
 mod particle_drawing;
+mod fps_limiter;
 
-use gfx::*;
 use gfx_particle_type::*;
 use particle_drawing::*;
 use shared::geometry::*;
 use shared::physics::particle::*;
 use shared::physics::tree::*;
+use fps_limiter::*;
+
 use sdl2::pixels::Color;
-use rand::*;
+use sdl2::event::Event;
+use sdl2::keycode::KeyCode;
 
 fn add_particles<'a>(count: u32,
                      position: Vector2D, pos_range: f32,
                      velocity: Vector2D, vel_range: f32,
                      particle_type: &'a GfxParticleType,
                      out: &mut Vec<Particle<'a, GfxParticleType>>) {
-    let mut rng = weak_rng();
+    let mut rng = rand::weak_rng();
 
-    for i in 0..count {
+    for _ in 0..count {
         let pos = Vector2D::random_radius(&mut rng, position, pos_range);
         let vel = Vector2D::random_radius(&mut rng, velocity, vel_range);
 
@@ -33,9 +35,18 @@ fn add_particles<'a>(count: u32,
 }
 
 pub fn main() {
-    let mut gfx = Gfx::new("planetjump");
+    let mut sdl_context = sdl2::init().video().unwrap();
+    let window = sdl_context.window("Planet Jump", 800, 600)
+        .resizable()
+        .build()
+        .unwrap();
+    let mut renderer = window.renderer()
+        .accelerated()
+        .present_vsync()
+        .build()
+        .unwrap();
 
-    let particle_types = load_particle_types(gfx.get_renderer(),
+    let particle_types = load_particle_types(&renderer,
                                              shared::particle_definitions::particle_types());
 
     let mut particles = Vec::<Particle<GfxParticleType>>::new();
@@ -68,12 +79,26 @@ pub fn main() {
     let mut tree = Tree::<GfxParticleType>::new(particles, 0);
     let mut step = 0;
 
+
 //    tree.update(step);
 
-    let mut drawer = gfx.get_drawer();
+    let mut event_pump = sdl_context.event_pump();
+
+    let mut drawer = renderer.drawer();
     drawer.set_draw_color(Color::RGB(43, 53, 56));
 
-    for (elapsed, fps) in gfx.get_loop_iterator() {
+    for elapsed in FpsLimiter::new(60) {
+        println!("ASDF");
+        for event in event_pump.poll_iter() {
+           println!("{:?}", event);
+            match event {
+                Event::Quit {..} | Event::KeyDown { keycode: KeyCode::Escape, .. } => {
+                    return
+                },
+                _ => {}
+            }
+        }
+
         drawer.clear();
         tree.update(step);
         draw_particles(&tree, step, &mut drawer);
