@@ -88,9 +88,7 @@ pub fn main() {
     drawer.set_draw_color(Color::RGB(43, 53, 56));
 
     for elapsed in FpsLimiter::new(60) {
-        println!("ASDF");
         for event in event_pump.poll_iter() {
-           println!("{:?}", event);
             match event {
                 Event::Quit {..} | Event::KeyDown { keycode: KeyCode::Escape, .. } => {
                     return
