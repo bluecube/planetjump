@@ -4,6 +4,7 @@ use geometry::*;
 use physics::forces::*;
 
 use std::cell::UnsafeCell;
+use std::cmp::Ordering;
 
 pub enum Tree<'a, ParticleType: HasParticleProperties + 'a> {
     InnerNode (InnerNode<'a, ParticleType>),
@@ -129,9 +130,9 @@ impl<'a, T: HasParticleProperties> Tree<'a, T> {
 
         let bbox_size = bbox.get_size();
         let split_axis = (if bbox_size.x > bbox_size.y { 0 } else { 1 }) as usize;
-        let median_estimate = (bbox.a[split_axis] + bbox.b[split_axis]) / 2.0;
 
-        median_split(particles, step, split_axis);
+        particles.sort_by(|a, b| float_cmp(a.get_position(step)[split_axis],
+                                           b.get_position(step)[split_axis]));
         let (left_particles, right_particles) = particles.split_at_mut(len / 2);
 
         let left = Tree::build(left_particles, step);
@@ -146,6 +147,10 @@ impl<'a, T: HasParticleProperties> Tree<'a, T> {
 
 }
 
+fn float_cmp(a: f32, b: f32) -> Ordering {
+    a.partial_cmp(&b).unwrap_or(Ordering::Equal)
+}
+
 fn must_open<T>(particle: &Particle<T>, node: &InnerNode<T>, distance: f32, step: u8) -> bool
     where T: HasParticleProperties {
 
@@ -155,44 +160,4 @@ fn must_open<T>(particle: &Particle<T>, node: &InnerNode<T>, distance: f32, step
     let min_distance_angle = radius / 0.05;
 
     distance < min_distance_radius || distance < min_distance_angle
-}
-
-fn median_split<'a, T: HasParticleProperties>(particles: &mut [Particle<'a, T>],
-                                              step: u8,
-                                              split_axis: usize) {
-    let mut low = 0;
-    let mut high = particles.len() - 1;
-    let target_index = particles.len() / 2;
-
-    assert!(low < high);
-
-    loop {
-        let mut pivot = (particles[low].get_position(step)[split_axis] +
-                         particles[high].get_position(step)[split_axis]) / 2.0;
-        let mut s_low = low;
-        let mut s_high = high;
-
-        while s_low < s_high {
-            while particles[s_low].get_position(step)[split_axis] <= pivot && s_low < s_high {
-                s_low += 1;
-            }
-            while particles[s_high].get_position(step)[split_axis] >= pivot && s_low < s_high {
-                s_high -= 1;
-            }
-
-            if s_low < s_high {
-                particles.swap(s_low, s_high);
-            }
-        }
-
-        if s_low == target_index {
-            return;
-        }
-        else if s_low < target_index {
-            low = s_low
-        }
-        else {
-            high = s_high;
-        }
-    }
 }
