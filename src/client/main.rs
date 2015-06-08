@@ -5,17 +5,15 @@ extern crate rand;
 mod gfx_particle_type;
 mod particle_drawing;
 mod fps_limiter;
+mod states;
 
 use gfx_particle_type::*;
-use particle_drawing::*;
 use shared::geometry::*;
 use shared::physics::particle::*;
-use shared::physics::tree::*;
 use fps_limiter::*;
+use states::{State, InMainMenu};
 
 use sdl2::pixels::Color;
-use sdl2::event::Event;
-use sdl2::keycode::KeyCode;
 
 fn add_particles<'a>(count: u32,
                      position: Vector2D, pos_range: f32,
@@ -76,32 +74,29 @@ pub fn main() {
 //                  &particle_types[1],
 //                  &mut particles);
 
-    let mut tree = Tree::<GfxParticleType>::new(particles, 0);
-    let mut step = 0;
-
-
 //    tree.update(step);
 
     let mut event_pump = sdl_context.event_pump();
-
     let mut drawer = renderer.drawer();
+
+    let mut state: Box<State> = Box::new(InMainMenu::new());
+
     drawer.set_draw_color(Color::RGB(43, 53, 56));
 
     for elapsed in FpsLimiter::new(60) {
         for event in event_pump.poll_iter() {
             match event {
-                Event::Quit {..} | Event::KeyDown { keycode: KeyCode::Escape, .. } => {
-                    return
-                },
-                _ => {}
+                sdl2::event::Event::Quit {..} => return,
+                _ => state.handle(event),
             }
         }
 
-        drawer.clear();
-        tree.update(step);
-        draw_particles(&tree, step, &mut drawer);
-        drawer.present();
+        match state.update() {
+            Some(new_state) => state = new_state,
+            None => return,
+        }
 
-        step = 1 - step;
+        state.draw(&mut drawer);
+        drawer.present();
     }
 }
