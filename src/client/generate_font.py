@@ -901,4 +901,4 @@ for i in range(ord(" "), ord("~") + 1):
     if c not in letters_map:
         raise Exception("Missing letter " + repr(c))
 
-    print("/* {} */ {:03d}, [".format(c, letters_map[c][1]) + ", ".join("{:03d}".format(number) for number in letters_map[c][0]) + "]")
+    print("/* {} */ {}, [".format(c, letters_map[c][1]) + ", ".join("0x{:02x}".format(number) for number in letters_map[c][0]) + "]")
