@@ -1,5 +1,6 @@
-letters = r"""
--a
+#!/usr/bin/python3
+
+letters = r"""-a
 
 
  XXXX
@@ -282,7 +283,7 @@ XXXX
 X
 X
 
--p
+-P
 XXXX
 X   X
 X   X
@@ -406,20 +407,20 @@ X   X
 -w
 
 
-X       X
-X       X
-X   X   X
- X X X X
-  X   X
+X     X
+X     X
+X     X
+X  X  X
+ XX XX
 
 -W
-X       X
-X       X
-X       X
-X   X   X
- X  X  X
- X X X X
-  X   X
+X     X
+X     X
+X     X
+X  X  X
+X  X  X
+X  X  X
+ XX XX
 
 -x
 
@@ -525,7 +526,7 @@ X   X
 X   X
  XXX X
 
--"
+-'
 X
 X
 
@@ -538,7 +539,7 @@ X
  X
   X
 
--(
+-)
 X
  X
   X
@@ -839,7 +840,7 @@ def header_and_rest(fn, iterable):
     current_header = None
     current_group = None
     for item in iterable:
-        header = fn(iterable)
+        header = fn(item)
         if header:
             if current_header:
                 yield (current_header, current_group)
@@ -853,7 +854,7 @@ def header_and_rest(fn, iterable):
         yield (current_header, current_group)
 
 def match_header(line):
-    match = re.match("^-(.)\s*$", line)
+    match = re.match(r"^-(.)\s*$", line)
     if not match:
         return False
     else:
@@ -863,7 +864,7 @@ def line_to_number(line):
     ret = 0
     used = 0
     for i, char in enumerate(line):
-        if char.isspace():
+        if not char.isspace():
             ret = ret | 1 << i
             used = i + 1
 
@@ -875,7 +876,11 @@ letters_map[" "] = ([0] * (ascent + descent), space_advance)
 
 for letter, lines in header_and_rest(match_header, letters.split("\n")):
     numbers, width = zip(*map(line_to_number, lines))
-    width = max(widht)
+    width = max(width)
+
+    while numbers[-1] == 0:
+        numbers = numbers[:-1]
+    numbers = list(numbers)
 
     if letter in letters_map:
         raise RuntimeError("Duplicate letter " + repr(letter))
@@ -886,7 +891,7 @@ for letter, lines in header_and_rest(match_header, letters.split("\n")):
     if len(numbers) < ascent + descent:
         numbers.extend([0] * (ascent + descent - len(numbers)))
     elif len(numbers) > ascent + descent:
-        raise RuntimeError("Letter " + repr(letter) + " is taller than ascent + descent (" + (ascent + descent) + ")")
+        raise RuntimeError("Letter " + repr(letter) + " is taller than ascent + descent (" + str(ascent + descent) + ")")
 
     letters_map[letter] = (numbers, width + spacing)
 
@@ -896,4 +901,4 @@ for i in range(ord(" "), ord("~") + 1):
     if c not in letters_map:
         raise Exception("Missing letter " + repr(c))
 
-    print("/* '{}' */ {:03i}, [".format(c, letters_map[c][1]) + ", ".join("{:03i}", number for number in lettes_map[c][0]) + "]")
+    print("/* {} */ {:03d}, [".format(c, letters_map[c][1]) + ", ".join("{:03d}".format(number) for number in letters_map[c][0]) + "]")
