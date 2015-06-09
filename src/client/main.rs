@@ -6,6 +6,7 @@ mod gfx_particle_type;
 mod particle_drawing;
 mod fps_limiter;
 mod states;
+mod font;
 
 use gfx_particle_type::*;
 use shared::geometry::*;

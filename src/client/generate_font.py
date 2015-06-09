@@ -895,10 +895,21 @@ for letter, lines in header_and_rest(match_header, letters.split("\n")):
 
     letters_map[letter] = (numbers, width + spacing)
 
+start_symbol = min(ord(letter) for letter in letters_map)
+end_symbol = max(ord(letter) for letter in letters_map) + 1
 
-for i in range(ord(" "), ord("~") + 1):
+print("const FIRST_GLYPH: usize = {};".format(start_symbol))
+print("const GLYPH_COUNT: usize = {};".format(end_symbol - start_symbol))
+print("const GLYPH_HEIGHT: usize = {};".format(ascent + descent))
+print("const GLYPH_ASCENT: u32 = {};".format(ascent))
+print()
+print("struct Glyph (u8, [u8; GLYPH_HEIGHT]);")
+print()
+print("const GLYPHS: [Glyph; GLYPH_COUNT] = [")
+for i in range(start_symbol, end_symbol):
     c = chr(i)
     if c not in letters_map:
         raise Exception("Missing letter " + repr(c))
 
-    print("/* {} */ {}, [".format(c, letters_map[c][1]) + ", ".join("0x{:02x}".format(number) for number in letters_map[c][0]) + "]")
+    print("    /* {} */ Glyph({}, [".format(c, letters_map[c][1]) + ", ".join("0x{:02x}".format(number) for number in letters_map[c][0]) + "]),")
+print("];")
