@@ -590,9 +590,9 @@ XXXXX
 X
 
 -/
-
   X
   X
+ X
  X
  X
 X
@@ -635,13 +635,13 @@ X   X
  XXX
 
 -4
-    X
-   XX
-  X X
- X  X
+   X
+  XX
+ X X
+X  X
 XXXXX
-    X
-    X
+   X
+   X
 
 -5
 XXXXX
@@ -694,6 +694,7 @@ X   X
 X
 
 
+
 X
 
 
@@ -701,6 +702,7 @@ X
 
 
  X
+
 
 
  X
@@ -741,8 +743,8 @@ X   X
 
 -@
 
-   XXX
- XX   X
+  XXXX
+ X    X
 X  XXX X
 X X  X X
 X X  X X
@@ -767,9 +769,9 @@ XXX
 XXX
 
 -\
-
 X
 X
+ X
  X
  X
   X
@@ -832,7 +834,8 @@ X X X
 ascent = 7
 descent = 2
 spacing = 1
-space_advance = 4
+space_advance = 5
+unknown_char_advance = 6
 
 import re
 
@@ -903,6 +906,7 @@ print("const GLYPH_COUNT: usize = {};".format(end_symbol - start_symbol))
 print("const GLYPH_HEIGHT: usize = {};".format(ascent + descent))
 print("const GLYPH_ASCENT: u32 = {};".format(ascent))
 print()
+print("#[derive(Copy,Clone,Debug)]")
 print("struct Glyph (u8, [u8; GLYPH_HEIGHT]);")
 print()
 print("const GLYPHS: [Glyph; GLYPH_COUNT] = [")
@@ -911,5 +915,9 @@ for i in range(start_symbol, end_symbol):
     if c not in letters_map:
         raise Exception("Missing letter " + repr(c))
 
-    print("    /* {} */ Glyph({}, [".format(c, letters_map[c][1]) + ", ".join("0x{:02x}".format(number) for number in letters_map[c][0]) + "]),")
+    print("    Glyph({}, [".format(letters_map[c][1]) + ", ".join("0x{:02x}".format(number) for number in letters_map[c][0]) + "]), /* {} */".format(c))
 print("];")
+
+unknown_char = [(1 << (unknown_char_advance - 1)) - 1] * ascent
+unknown_char.extend([0] * descent)
+print("const UNKNOWN_CHAR_GLYPH: Glyph = Glyph({}, [".format(unknown_char_advance) + ", ".join("0x{:02x}".format(number) for number in unknown_char) + "]);")
