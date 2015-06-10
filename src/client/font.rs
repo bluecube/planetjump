@@ -4,12 +4,13 @@ const FIRST_GLYPH: usize = 32;
 const GLYPH_COUNT: usize = 95;
 const GLYPH_HEIGHT: usize = 9;
 const GLYPH_ASCENT: u32 = 7;
+const GLYPH_SPACING: i32 = 1;
 
 #[derive(Copy,Clone,Debug)]
 struct Glyph (u8, [u8; GLYPH_HEIGHT]);
 
 const GLYPHS: [Glyph; GLYPH_COUNT] = [
-    Glyph(5, [0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00]), /*   */
+    Glyph(4, [0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00]), /*   */
     Glyph(2, [0x01, 0x01, 0x01, 0x01, 0x01, 0x00, 0x01, 0x00, 0x00]), /* ! */
     Glyph(4, [0x05, 0x05, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00]), /* " */
     Glyph(6, [0x00, 0x00, 0x0a, 0x1f, 0x0a, 0x1f, 0x0a, 0x00, 0x00]), /* # */
@@ -113,7 +114,7 @@ impl Glyph {
         for (i, bits) in self.1.into_iter().enumerate() {
             for j in 0..8 {
                 if bits & (1 << j) != 0 {
-                    let box_size = (4 * scale) / 5;
+                    let box_size = (9 * scale + 5) / 10 - 1;
                     let rect = sdl2::rect::Rect::new(x + ((j as i32) * scale),
                                                      y + ((i as i32) * scale),
                                                      box_size, box_size);
@@ -149,7 +150,7 @@ pub fn draw_text(text: &str,
 }
 
 pub fn measure_text(text: &str, scale: i32) -> sdl2::rect::Rect {
-    let mut cursor_x = 0;
+    let mut cursor_x = -GLYPH_SPACING * scale;
     for glyph in text.chars().map(Glyph::find_by_char) {
         cursor_x += (glyph.0 as i32) * scale
     }

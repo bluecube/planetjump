@@ -834,8 +834,8 @@ X X X
 ascent = 7
 descent = 2
 spacing = 1
-space_advance = 5
-unknown_char_advance = 6
+space_advance = 4
+unknown_char_width = 5
 
 import re
 
@@ -905,6 +905,7 @@ print("const FIRST_GLYPH: usize = {};".format(start_symbol))
 print("const GLYPH_COUNT: usize = {};".format(end_symbol - start_symbol))
 print("const GLYPH_HEIGHT: usize = {};".format(ascent + descent))
 print("const GLYPH_ASCENT: u32 = {};".format(ascent))
+print("const GLYPH_SPACING: i32 = {};".format(spacing))
 print()
 print("#[derive(Copy,Clone,Debug)]")
 print("struct Glyph (u8, [u8; GLYPH_HEIGHT]);")
@@ -918,6 +919,6 @@ for i in range(start_symbol, end_symbol):
     print("    Glyph({}, [".format(letters_map[c][1]) + ", ".join("0x{:02x}".format(number) for number in letters_map[c][0]) + "]), /* {} */".format(c))
 print("];")
 
-unknown_char = [(1 << (unknown_char_advance - 1)) - 1] * ascent
+unknown_char = [(1 << unknown_char_width) - 1] * ascent
 unknown_char.extend([0] * descent)
-print("const UNKNOWN_CHAR_GLYPH: Glyph = Glyph({}, [".format(unknown_char_advance) + ", ".join("0x{:02x}".format(number) for number in unknown_char) + "]);")
+print("const UNKNOWN_CHAR_GLYPH: Glyph = Glyph({}, [".format(unknown_char_width + spacing) + ", ".join("0x{:02x}".format(number) for number in unknown_char) + "]);")
