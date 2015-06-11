@@ -7,12 +7,12 @@ mod particle_drawing;
 mod fps_limiter;
 mod states;
 mod font;
+mod colors;
 
 use gfx_particle_type::*;
 use shared::geometry::*;
 use shared::physics::particle::*;
 use fps_limiter::*;
-use states::{State, InMainMenu};
 
 use sdl2::pixels::Color;
 
@@ -80,7 +80,7 @@ pub fn main() {
     let mut event_pump = sdl_context.event_pump();
     let mut drawer = renderer.drawer();
 
-    let mut state: Box<State> = Box::new(InMainMenu::new());
+    let mut state: Box<states::State> = Box::new(states::inmenu::in_main_menu());
 
     drawer.set_draw_color(Color::RGB(43, 53, 56));
 
@@ -93,8 +93,18 @@ pub fn main() {
         }
 
         match state.update() {
-            Some(new_state) => state = new_state,
-            None => return,
+            states::UpdateResult::Stay => {},
+            states::UpdateResult::Change(mut new_state) => {
+                new_state.set_previous(state);
+                state = new_state;
+            },
+            states::UpdateResult::Back(Some(new_state)) => {
+                state = new_state;
+                // We're not setting previous state because this already is the previous
+            },
+            states::UpdateResult::Back(None) => {
+                return
+            }
         }
 
         state.draw(&mut drawer);
