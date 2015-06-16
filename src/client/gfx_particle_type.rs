@@ -1,11 +1,13 @@
+extern crate shared;
+
 use sdl2::render::{Renderer, RenderDrawer, Texture, BlendMode};
 use sdl2::pixels::PixelFormatEnum;
 use sdl2::rect::*;
 
-use shared::physics::particle::*;
-use shared::physics::traits::*;
+use self::shared::physics::particle::*;
+use self::shared::physics::traits::*;
 
-use shared::particle_definitions::*;
+use self::shared::particle_definitions::*;
 
 pub struct GfxParticleType {
     base: BasicParticleType,

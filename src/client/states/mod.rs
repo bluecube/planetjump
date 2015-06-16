@@ -1,45 +1,32 @@
 extern crate sdl2;
 
 pub mod inmenu;
+pub mod ingame;
 
 use gfx_particle_type::*;
 use particle_drawing::*;
-use shared::physics::tree::*;
 use font;
 use colors;
 
-pub trait State {
-    fn handle(&mut self, event: sdl2::event::Event);
-    fn draw(&mut self, drawer: &mut sdl2::render::RenderDrawer);
-    fn update(&mut self) -> UpdateResult;
-    fn set_previous(&mut self, previous_state: Box<State>);
+pub trait State<'a> {
+    fn handle(&'a mut self, event: sdl2::event::Event);
+    fn draw(&'a mut self, drawer: &mut sdl2::render::RenderDrawer);
+    fn update(&'a mut self) -> UpdateResult;
+    fn init(&'a mut self, previous_state: Option<Box<State>>,
+            renderer: &sdl2::render::Renderer);
 }
 
 pub enum UpdateResult {
+    /// Keep the same state
     Stay,
+
+    /// Regular forward step. Call init on the new state
     Change(Box<State>),
+
+    /// Backward step. The state is supposed to be already inited.
+    /// If state is None, ends the program.
     Back(Option<Box<State>>),
+
+    /// Like change, but passes None as the previous_step of init method.
+    Reset(Box<State>)
 }
-
-/*
-pub struct InGame {
-    tree: Tree<GfxParticleType>,
-    step: u8,
-}
-
-impl State for Box<InGame> {
-    fn handle(&mut self, event: Event) {}
-
-    fn draw(&mut self, drawer: &mut sdl2::render::Drawer) {
-        drawer.clear();
-        draw_particles(&self.tree, self.step, &mut drawer);
-        drawer.present();
-    }
-
-    fn update(self) {
-        self.step = 1 - self.step;
-        self.tree.update(self.step);
-
-        return self;
-    }
-}*/

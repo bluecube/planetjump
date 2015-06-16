@@ -1,6 +1,9 @@
+extern crate shared;
+extern crate sdl2;
+
 use gfx_particle_type::*;
-use shared::physics::tree::*;
-use shared::physics::traits::*;
+use self::shared::physics::tree::*;
+use self::shared::physics::traits::*;
 use sdl2::render::RenderDrawer;
 
 pub fn draw_particles(tree: &Tree<GfxParticleType>, step: u8, drawer: &mut RenderDrawer) {

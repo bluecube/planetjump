@@ -1,5 +1,8 @@
 extern crate sdl2;
+extern crate shared;
+extern crate rand;
 
+use states;
 use states::{State, UpdateResult};
 use sdl2::event::Event;
 use sdl2::keycode::KeyCode;
@@ -7,6 +10,7 @@ use std;
 
 use font;
 use colors;
+
 
 pub struct InMenu {
     options: Vec<(&'static str, Box<Fn() -> UpdateResult>)>,
@@ -16,8 +20,8 @@ pub struct InMenu {
     previous: Option<Box<State>>,
 }
 
-impl State for InMenu {
-    fn handle(&mut self, event: Event) {
+impl<'a> State<'a> for InMenu<'a> {
+    fn handle(&'a mut self, event: Event) {
         if self.enter || self.exit {
             return;
         }
@@ -43,7 +47,7 @@ impl State for InMenu {
         }
     }
 
-    fn draw(&mut self, drawer: &mut sdl2::render::RenderDrawer) {
+    fn draw(&'a mut self, drawer: &mut sdl2::render::RenderDrawer) {
         drawer.set_draw_color(colors::bg);
         drawer.clear();
         let mut i = 0;
@@ -55,7 +59,7 @@ impl State for InMenu {
         }
     }
 
-    fn update(&mut self) -> UpdateResult {
+    fn update(&'a mut self) -> UpdateResult {
         if self.enter {
             self.enter = false;
             self.options[self.selected].1()
@@ -74,14 +78,15 @@ impl State for InMenu {
         }
     }
 
-    fn set_previous(&mut self, previous_state: Box<State>) {
-        self.previous = Some(previous_state);
+    fn init(&'a mut self, previous_state: Option<Box<State>>,
+            renderer: &sdl2::render::Renderer) {
+        self.previous = previous_state;
     }
 }
 
-pub fn in_main_menu() -> InMenu {
-    InMenu {
-        options: vec!(("Join Game", Box::new(|| UpdateResult::Stay)),
+pub fn in_main_menu() -> Box<State> {
+    Box::new(InMenu {
+        options: vec!(("Join Game", Box::new(|| UpdateResult::Change(states::ingame::new_game()))),
                       ("Player Settings", Box::new(|| UpdateResult::Stay)),
                       ("Controls Settings", Box::new(|| UpdateResult::Stay)),
                       ("Exit", Box::new(|| UpdateResult::Back(None)))),
@@ -89,5 +94,5 @@ pub fn in_main_menu() -> InMenu {
         enter: false,
         exit: false,
         previous: None
-    }
+    })
 }
