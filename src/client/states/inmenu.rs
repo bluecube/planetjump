@@ -12,16 +12,16 @@ use font;
 use colors;
 
 
-pub struct InMenu {
-    options: Vec<(&'static str, Box<Fn() -> UpdateResult>)>,
+pub struct InMenu<'a> {
+    options: Vec<(&'static str, Box<Fn() -> UpdateResult<'a>>)>,
     selected: usize,
     enter: bool,
     exit: bool,
-    previous: Option<Box<State>>,
+    previous: Option<Box<State<'a>>>,
 }
 
 impl<'a> State<'a> for InMenu<'a> {
-    fn handle(&'a mut self, event: Event) {
+    fn handle(&mut self, event: Event) {
         if self.enter || self.exit {
             return;
         }
@@ -47,7 +47,7 @@ impl<'a> State<'a> for InMenu<'a> {
         }
     }
 
-    fn draw(&'a mut self, drawer: &mut sdl2::render::RenderDrawer) {
+    fn draw(&mut self, drawer: &mut sdl2::render::RenderDrawer) {
         drawer.set_draw_color(colors::bg);
         drawer.clear();
         let mut i = 0;
@@ -59,7 +59,7 @@ impl<'a> State<'a> for InMenu<'a> {
         }
     }
 
-    fn update(&'a mut self) -> UpdateResult {
+    fn update(&'a mut self) -> UpdateResult<'a> {
         if self.enter {
             self.enter = false;
             self.options[self.selected].1()
@@ -78,13 +78,13 @@ impl<'a> State<'a> for InMenu<'a> {
         }
     }
 
-    fn init(&'a mut self, previous_state: Option<Box<State>>,
-            renderer: &sdl2::render::Renderer) {
+    fn init(&'a mut self, previous_state: Option<Box<State<'a>>>,
+            renderer: &'a sdl2::render::Renderer) {
         self.previous = previous_state;
     }
 }
 
-pub fn in_main_menu() -> Box<State> {
+pub fn in_main_menu<'a>() -> Box<State<'a>> {
     Box::new(InMenu {
         options: vec!(("Join Game", Box::new(|| UpdateResult::Change(states::ingame::new_game()))),
                       ("Player Settings", Box::new(|| UpdateResult::Stay)),

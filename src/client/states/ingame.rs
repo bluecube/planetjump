@@ -6,6 +6,7 @@ use states;
 use states::{State, UpdateResult};
 use sdl2::event::Event;
 use sdl2::keycode::KeyCode;
+use std;
 
 use gfx_particle_type::*;
 use particle_drawing::*;
@@ -29,7 +30,7 @@ enum Action {
 }
 
 impl<'a> State<'a> for InGame<'a> {
-    fn handle(&'a mut self, event: Event) {
+    fn handle(&mut self, event: Event) {
         match event {
             Event::KeyDown {keycode: KeyCode::Escape, .. } => {
                 self.action = Action::Exit;
@@ -38,20 +39,20 @@ impl<'a> State<'a> for InGame<'a> {
         }
     }
 
-    fn draw(&'a mut self, drawer: &mut sdl2::render::RenderDrawer) {
+    fn draw(&mut self, drawer: &mut sdl2::render::RenderDrawer) {
         drawer.clear();
         draw_particles(&self.tree, self.step, &mut drawer);
         drawer.present();
     }
 
-    fn update(&'a mut self) -> UpdateResult {
+    fn update(&mut self) -> UpdateResult {
         if let Action::Exit = self.action {
             return UpdateResult::Reset(states::inmenu::in_main_menu());
         }
         self.step = 1 - self.step;
         self.tree.update(self.step);
 
-        return UpdateResult::Stay;
+        UpdateResult::Stay
     }
 
     fn init(&'a mut self, previous_state: Option<Box<State>>,
