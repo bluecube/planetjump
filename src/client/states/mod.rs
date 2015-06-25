@@ -8,25 +8,23 @@ use particle_drawing::*;
 use font;
 use colors;
 
-pub trait State<'a> {
+pub trait State {
     fn handle(&mut self, event: sdl2::event::Event);
-    fn draw(&mut self, drawer: &mut sdl2::render::RenderDrawer);
-    fn update(&'a mut self) -> UpdateResult<'a>;
-    fn init(&'a mut self, previous_state: Option<Box<State<'a>>>,
-            renderer: &'a sdl2::render::Renderer);
+    fn update(&mut self, renderer: &mut sdl2::render::Renderer) -> UpdateResult;
+    fn init(&mut self, previous_state: Option<Box<State>>);
 }
 
-pub enum UpdateResult<'a> {
+pub enum UpdateResult {
     /// Keep the same state
     Stay,
 
     /// Regular forward step. Call init on the new state
-    Change(Box<State<'a>>),
+    Change(Box<State>),
 
     /// Backward step. The state is supposed to be already inited.
     /// If state is None, ends the program.
-    Back(Option<Box<State<'a>>>),
+    Back(Option<Box<State>>),
 
     /// Like change, but passes None as the previous_step of init method.
-    Reset(Box<State<'a>>)
+    Reset(Box<State>)
 }

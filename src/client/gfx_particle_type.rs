@@ -1,5 +1,7 @@
 extern crate shared;
 
+use std::rc::Rc;
+
 use sdl2::render::{Renderer, RenderDrawer, Texture, BlendMode};
 use sdl2::pixels::PixelFormatEnum;
 use sdl2::rect::*;
@@ -108,6 +110,6 @@ impl GfxParticleType {
 }
 
 pub fn load_particle_types<'a>(renderer: &'a Renderer,
-                               definitions: Vec<ParticleTypeDefinition>) -> Vec<GfxParticleType> {
-    definitions.into_iter().map(|definition| GfxParticleType::new(renderer, definition)).collect()
+                               definitions: Vec<ParticleTypeDefinition>) -> Vec<Rc<GfxParticleType>> {
+    definitions.into_iter().map(|definition| Rc::new(GfxParticleType::new(renderer, definition))).collect()
 }

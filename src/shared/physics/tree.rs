@@ -6,19 +6,19 @@ use physics::forces::*;
 use std::cell::UnsafeCell;
 use std::cmp::Ordering;
 
-pub enum Tree<'a, ParticleType: HasParticleProperties + 'a> {
-    InnerNode (InnerNode<'a, ParticleType>),
-    LeafNode (Particle<'a, ParticleType>)
+pub enum Tree<ParticleType: HasParticleProperties> {
+    InnerNode (InnerNode<ParticleType>),
+    LeafNode (Particle<ParticleType>)
 }
 
-pub struct InnerNode<'a, ParticleType: HasParticleProperties + 'a> {
+pub struct InnerNode<ParticleType: HasParticleProperties> {
     bounding_box: [BoundingBox; 2],
     gravity_mass: f32,
-    pub left_child: Box<Tree<'a, ParticleType>>,
-    pub right_child: Box<Tree<'a, ParticleType>>,
+    pub left_child: Box<Tree<ParticleType>>,
+    pub right_child: Box<Tree<ParticleType>>,
 }
 
-impl<'a, T: HasParticleProperties> Tree<'a, T> {
+impl<T: HasParticleProperties> Tree<T> {
     /// Calculates forces that every particle exterts on every other particle
     /// and updates particles accordingly.
     pub fn update(&mut self, step: u8) -> u32 {
@@ -93,7 +93,7 @@ impl<'a, T: HasParticleProperties> Tree<'a, T> {
         }
     }
 
-    fn destroy(self, output: &mut Vec<Particle<'a, T>>) {
+    fn destroy(self, output: &mut Vec<Particle<T>>) {
         match self {
             Tree::InnerNode(node) => {
                 node.left_child.destroy(output);
@@ -103,22 +103,22 @@ impl<'a, T: HasParticleProperties> Tree<'a, T> {
         }
     }
 
-    pub fn rebuild(self, step: u8) -> Tree<'a, T> {
+    pub fn rebuild(self, step: u8) -> Tree<T> {
         let mut particles = Vec::<Particle<T>>::new();
         self.destroy(&mut particles);
         Tree::<T>::new(particles, step)
     }
 
-    pub fn new(mut particles: Vec<Particle<'a, T>>, step: u8) -> Tree<'a, T> {
+    pub fn new(mut particles: Vec<Particle<T>>, step: u8) -> Tree<T> {
         Tree::build(&mut particles[..], step)
     }
 
-    fn build(particles: &mut [Particle<'a, T>], step: u8) -> Tree<'a, T> {
+    fn build(particles: &mut [Particle<T>], step: u8) -> Tree<T> {
         let len = particles.len();
 
         assert!(len > 0);
         if len == 1 {
-            return Tree::LeafNode(particles[0]);
+            return Tree::LeafNode(particles[0].clone());
         }
 
         let mut m = 0.0;

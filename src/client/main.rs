@@ -23,12 +23,9 @@ pub fn main() {
         .unwrap();
 
     let mut event_pump = sdl_context.event_pump();
-    let mut drawer = renderer.drawer();
 
     let mut state: Box<states::State> = states::inmenu::in_main_menu();
-    state.init(None, &renderer);
-
-    drawer.set_draw_color(Color::RGB(43, 53, 56));
+    state.init(None);
 
     for elapsed in FpsLimiter::new(60) {
         for event in event_pump.poll_iter() {
@@ -38,22 +35,23 @@ pub fn main() {
             }
         }
 
-        match state.update() {
+        match state.update(&mut renderer) {
             states::UpdateResult::Stay => {},
             states::UpdateResult::Change(mut new_state) => {
-                new_state.init(Some(state), &renderer);
+                new_state.init(Some(state));
                 state = new_state;
             },
-            states::UpdateResult::Back(Some(new_state)) => {
+            states::UpdateResult::Back(Some(mut new_state)) => {
                 state = new_state;
                 // We're not setting previous state because this already is the previous
             },
             states::UpdateResult::Back(None) => {
                 return
             }
+            states::UpdateResult::Reset(mut new_state) => {
+                new_state.init(None);
+                state = new_state;
+            }
         }
-
-        state.draw(&mut drawer);
-        drawer.present();
     }
 }

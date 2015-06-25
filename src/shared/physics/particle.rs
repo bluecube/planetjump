@@ -1,11 +1,12 @@
 use geometry::*;
 use physics::traits::*;
 use physics::forces::FRICTION;
+use std::rc::Rc;
 
 // Time step.
 static DT: f32 = 0.01;
 
-#[derive(PartialEq,Clone,Copy,Debug)]
+#[derive(PartialEq,Clone,Debug)]
 pub struct BasicParticleType {
     pub inertia_mass: f32,
     pub gravity_mass: f32,
@@ -14,28 +15,29 @@ pub struct BasicParticleType {
 }
 
 #[derive(Debug)]
-pub struct Particle<'a, ParticleType: HasParticleProperties + 'a> {
+pub struct Particle<ParticleType: HasParticleProperties> {
     // Current and previous position switch places.
     // Velocity doesn't need to be stored explicitly for verlet integration
     position: [Vector2D; 2],
-    particle_type: &'a ParticleType,
+    particle_type: Rc<ParticleType>,
 }
 
-impl<'a, T: HasParticleProperties + 'a> Copy for Particle<'a, T> {}
-
-impl<'a, T: HasParticleProperties + 'a> Clone for Particle<'a, T> {
+impl<T: HasParticleProperties> Clone for Particle<T> {
     fn clone(&self) -> Self {
-        *self
+        Particle::<T> {
+            position: self.position,
+            particle_type: self.particle_type.clone()
+        }
     }
 }
 
-impl<'a, T:HasParticleProperties> HasGravityMass for Particle<'a, T> {
+impl<T:HasParticleProperties> HasGravityMass for Particle<T> {
     fn get_gravity_mass(&self) -> f32 {
         self.particle_type.get_gravity_mass()
     }
 }
 
-impl<'a, T: HasParticleProperties> HasParticleProperties for Particle<'a, T> {
+impl<T: HasParticleProperties> HasParticleProperties for Particle<T> {
     fn get_inertia_mass(&self) -> f32 {
         self.particle_type.get_inertia_mass()
     }
@@ -47,7 +49,7 @@ impl<'a, T: HasParticleProperties> HasParticleProperties for Particle<'a, T> {
     }
 }
 
-impl<'a, T: HasParticleProperties> HasPosition for Particle<'a, T> {
+impl<T: HasParticleProperties> HasPosition for Particle<T> {
     fn get_position(&self, step: u8) -> Vector2D {
         self.position[step as usize]
     }
@@ -71,8 +73,8 @@ impl HasParticleProperties for BasicParticleType {
     }
 }
 
-impl<'a, T: HasParticleProperties> Particle<'a, T> {
-    pub fn new(position: Vector2D, velocity: Vector2D, step: u8, particle_type: &T) -> Particle<T> {
+impl<T: HasParticleProperties> Particle<T> {
+    pub fn new(position: Vector2D, velocity: Vector2D, step: u8, particle_type: Rc<T>) -> Particle<T> {
         Particle {
             position:  if step == 0 {
                     [position, position - velocity * DT]
@@ -97,6 +99,6 @@ impl<'a, T: HasParticleProperties> Particle<'a, T> {
     }
 
     pub fn get_particle_type(&self) -> &T {
-        self.particle_type
+        &self.particle_type
     }
 }

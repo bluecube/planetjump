@@ -12,15 +12,15 @@ use font;
 use colors;
 
 
-pub struct InMenu<'a> {
-    options: Vec<(&'static str, Box<Fn() -> UpdateResult<'a>>)>,
+pub struct InMenu {
+    options: Vec<(&'static str, Box<Fn(&mut sdl2::render::Renderer) -> UpdateResult>)>,
     selected: usize,
     enter: bool,
     exit: bool,
-    previous: Option<Box<State<'a>>>,
+    previous: Option<Box<State>>,
 }
 
-impl<'a> State<'a> for InMenu<'a> {
+impl State for InMenu {
     fn handle(&mut self, event: Event) {
         if self.enter || self.exit {
             return;
@@ -47,22 +47,24 @@ impl<'a> State<'a> for InMenu<'a> {
         }
     }
 
-    fn draw(&mut self, drawer: &mut sdl2::render::RenderDrawer) {
-        drawer.set_draw_color(colors::bg);
-        drawer.clear();
-        let mut i = 0;
-        for (i, tuple) in self.options.iter().enumerate() {
-            let text = tuple.0;
-            drawer.set_draw_color(if i == self.selected { colors::highlight } else { colors::fg });
-            //let rect = font::measure_text(text, 5);
-            font::draw_text(text, drawer, 10, 10 + 50 * i as i32, 5);
+    fn update(&mut self, renderer: &mut sdl2::render::Renderer) -> UpdateResult {
+        {
+            let mut drawer = renderer.drawer();
+            drawer.set_draw_color(colors::bg);
+            drawer.clear();
+            let mut i = 0;
+            for (i, tuple) in self.options.iter().enumerate() {
+                let text = tuple.0;
+                drawer.set_draw_color(if i == self.selected { colors::highlight } else { colors::fg });
+                //let rect = font::measure_text(text, 5);
+                font::draw_text(text, &mut drawer, 10, 10 + 50 * i as i32, 5);
+            }
+            drawer.present();
         }
-    }
 
-    fn update(&'a mut self) -> UpdateResult<'a> {
         if self.enter {
             self.enter = false;
-            self.options[self.selected].1()
+            self.options[self.selected].1(renderer)
         }
         else if self.exit {
             let mut ret = None;
@@ -78,18 +80,17 @@ impl<'a> State<'a> for InMenu<'a> {
         }
     }
 
-    fn init(&'a mut self, previous_state: Option<Box<State<'a>>>,
-            renderer: &'a sdl2::render::Renderer) {
+    fn init(&mut self, previous_state: Option<Box<State>>) {
         self.previous = previous_state;
     }
 }
 
-pub fn in_main_menu<'a>() -> Box<State<'a>> {
+pub fn in_main_menu() -> Box<State> {
     Box::new(InMenu {
-        options: vec!(("Join Game", Box::new(|| UpdateResult::Change(states::ingame::new_game()))),
-                      ("Player Settings", Box::new(|| UpdateResult::Stay)),
-                      ("Controls Settings", Box::new(|| UpdateResult::Stay)),
-                      ("Exit", Box::new(|| UpdateResult::Back(None)))),
+        options: vec!(("Join Game", Box::new(|renderer| UpdateResult::Change(states::ingame::new_game(renderer)))),
+                      ("Player Settings", Box::new(|renderer| UpdateResult::Stay)),
+                      ("Controls Settings", Box::new(|renderer| UpdateResult::Stay)),
+                      ("Exit", Box::new(|renderer| UpdateResult::Back(None)))),
         selected: 0,
         enter: false,
         exit: false,

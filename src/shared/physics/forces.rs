@@ -19,9 +19,9 @@ fn min(a: f32, b: f32) -> f32 {
 }
 
 /// Force that x2 exterts on x1
-pub fn get_force_vector<'a, ParticleType: HasParticleProperties>(x1: &Particle<'a, ParticleType>,
-                                                                 x2: &Particle<'a, ParticleType>,
-                                                                 step: u8) -> Vector2D {
+pub fn get_force_vector<ParticleType: HasParticleProperties>(x1: &Particle<ParticleType>,
+                                                             x2: &Particle<ParticleType>,
+                                                             step: u8) -> Vector2D {
 
     // TODO: Convert this to polynomial
 
