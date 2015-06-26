@@ -48,6 +48,7 @@ impl State for InGame {
         self.tree.update(self.step);
 
         let mut drawer = renderer.drawer();
+        drawer.set_draw_color(colors::bg);
         drawer.clear();
         draw_particles(&self.tree, self.step, &mut drawer);
         drawer.present();
@@ -84,17 +85,17 @@ pub fn new_game(renderer: &sdl2::render::Renderer) -> Box<InGame> {
     let mut particles = Vec::<Particle<GfxParticleType>>::new();
     add_particles(100,
                   Vector2D::new(400.0, 400.0), 40.0,
-                  Vector2D::new(0.0, -1.0), 0.1,
-                  &particle_types[0],
+                  Vector2D::new(-2.0, -1.0), 0.0,
+                  &particle_types[2],
                   &mut particles);
     add_particles(70,
                   Vector2D::new(600.0, 400.0), 20.0,
-                  Vector2D::new(0.0, 20.0), 0.1,
+                  Vector2D::new(-5.0, 10.0), 0.0,
                   &particle_types[0],
                   &mut particles);
     add_particles(50,
                   Vector2D::new(700.0, 300.0), 20.0,
-                  Vector2D::new(5.0, 10.0), 0.1,
+                  Vector2D::new(10.0, 5.0), 0.0,
                   &particle_types[1],
                   &mut particles);
 
