@@ -1,7 +1,7 @@
 extern crate sdl2;
 
 const FIRST_GLYPH: usize = 32;
-const GLYPH_COUNT: usize = 95;
+const GLYPH_COUNT: usize = 96;
 const GLYPH_HEIGHT: usize = 9;
 const GLYPH_ASCENT: u32 = 7;
 const GLYPH_SPACING: i32 = 1;
@@ -105,8 +105,8 @@ const GLYPHS: [Glyph; GLYPH_COUNT] = [
     Glyph(2, [0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x00, 0x00]), /* | */
     Glyph(4, [0x01, 0x02, 0x02, 0x04, 0x02, 0x02, 0x01, 0x00, 0x00]), /* } */
     Glyph(6, [0x00, 0x00, 0x02, 0x15, 0x08, 0x00, 0x00, 0x00, 0x00]), /* ~ */
+    Glyph(6, [0x1f, 0x1f, 0x1f, 0x1f, 0x1f, 0x1f, 0x1f, 0x00, 0x00])  /* Unknown character */
 ];
-const UNKNOWN_CHAR_GLYPH: Glyph = Glyph(6, [0x1f, 0x1f, 0x1f, 0x1f, 0x1f, 0x1f, 0x1f, 0x00, 0x00]);
 
 impl Glyph {
     fn draw(self, drawer: &mut sdl2::render::RenderDrawer,
@@ -125,17 +125,17 @@ impl Glyph {
     }
 
     fn find_by_char(c: char) -> Glyph {
-        let index = c as usize;
+        let mut index = c as usize;
 
         if index < FIRST_GLYPH {
-            return UNKNOWN_CHAR_GLYPH;
+            return GLYPHS[GLYPH_COUNT - 1];
         }
-        let glyph_index = index - FIRST_GLYPH;
-        if glyph_index >= GLYPH_COUNT {
-            return UNKNOWN_CHAR_GLYPH;
+        index = index - FIRST_GLYPH;
+        if index >= GLYPH_COUNT {
+            return GLYPHS[GLYPH_COUNT - 1];
         }
 
-        return GLYPHS[glyph_index];
+        return GLYPHS[index];
     }
 }
 
