@@ -57,7 +57,8 @@ impl State for InMenu {
                 let text = tuple.0;
                 drawer.set_draw_color(if i == self.selected { colors::highlight } else { colors::fg });
                 //let rect = font::measure_text(text, 5);
-                font::draw_text(text, &mut drawer, 10, 10 + 50 * i as i32, 5);
+                let scale = 5;
+                font::draw_text(text, &mut drawer, 10, 10 + font::line_spacing(scale) * i as i32, scale);
             }
             drawer.present();
         }

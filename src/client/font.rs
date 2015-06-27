@@ -157,3 +157,7 @@ pub fn measure_text(text: &str, scale: i32) -> sdl2::rect::Rect {
 
     sdl2::rect::Rect::new(0, 0, cursor_x, (GLYPH_HEIGHT as i32) * scale)
 }
+
+pub fn line_spacing(scale: i32) -> i32 {
+    scale * GLYPH_HEIGHT as i32
+}
