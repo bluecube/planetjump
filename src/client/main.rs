@@ -27,7 +27,7 @@ pub fn main() {
     let mut state: Box<states::State> = states::inmenu::in_main_menu();
     state.init(None);
 
-    for elapsed in FpsLimiter::new(60) {
+    for (elapsed, fps) in FpsLimiter::new(60) {
         for event in event_pump.poll_iter() {
             match event {
                 sdl2::event::Event::Quit {..} => return,
@@ -35,7 +35,7 @@ pub fn main() {
             }
         }
 
-        match state.update(&mut renderer) {
+        match state.update(&mut renderer, elapsed, fps) {
             states::UpdateResult::Stay => {},
             states::UpdateResult::Change(mut new_state) => {
                 new_state.init(Some(state));

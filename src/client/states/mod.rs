@@ -10,7 +10,8 @@ use colors;
 
 pub trait State {
     fn handle(&mut self, event: sdl2::event::Event);
-    fn update(&mut self, renderer: &mut sdl2::render::Renderer) -> UpdateResult;
+    fn update(&mut self, renderer: &mut sdl2::render::Renderer,
+              elapsed: u32, fps: f32) -> UpdateResult;
     fn init(&mut self, previous_state: Option<Box<State>>);
 }
 

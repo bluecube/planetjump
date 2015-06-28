@@ -40,7 +40,9 @@ impl State for InGame {
         }
     }
 
-    fn update(&mut self, renderer: &mut sdl2::render::Renderer) -> UpdateResult {
+    fn update(&mut self,
+              renderer: &mut sdl2::render::Renderer,
+              elapsed: u32, fps: f32) -> UpdateResult {
         if let Action::Exit = self.action {
             return UpdateResult::Reset(states::inmenu::in_main_menu());
         }
@@ -49,6 +51,7 @@ impl State for InGame {
 
         renderer.set_draw_color(colors::bg);
         renderer.clear();
+        draw_fps(fps, renderer);
         draw_particles(&self.tree, self.step, renderer);
         renderer.present();
 
@@ -58,6 +61,16 @@ impl State for InGame {
     fn init(&mut self, previous_state: Option<Box<State>>) {
         // No-op
     }
+}
+
+fn draw_fps(fps: f32, renderer: &mut sdl2::render::Renderer) {
+    let text = &format!("{:.1}", fps);
+    let scale = 20;
+    let (screen_w, _) = renderer.get_output_size().unwrap();
+    let (font_w, _) = font::measure_text(text, scale);
+
+    renderer.set_draw_color(colors::faded);
+    font::draw_text(text, renderer, (screen_w - font_w) as i32, 0, scale);
 }
 
 fn add_particles(count: u32,

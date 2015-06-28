@@ -149,14 +149,14 @@ pub fn draw_text(text: &str,
     }
 }
 
-pub fn measure_text(text: &str, scale: u32) -> sdl2::rect::Rect {
+pub fn measure_text(text: &str, scale: u32) -> (u32, u32) {
     let mut cursor_x = 0;
     for glyph in text.chars().map(Glyph::find_by_char) {
         cursor_x += glyph.0 as u32 * scale;
     }
     cursor_x -= GLYPH_SPACING * scale;
 
-    sdl2::rect::Rect::new_unwrap(0, 0, cursor_x, GLYPH_HEIGHT as u32 * scale)
+    (cursor_x, GLYPH_HEIGHT as u32 * scale)
 }
 
 pub fn line_spacing(scale: u32) -> i32 {

@@ -47,7 +47,9 @@ impl State for InMenu {
         }
     }
 
-    fn update(&mut self, renderer: &mut sdl2::render::Renderer) -> UpdateResult {
+    fn update(&mut self,
+              renderer: &mut sdl2::render::Renderer,
+              elapsed: u32, fps: f32) -> UpdateResult {
         renderer.set_draw_color(colors::bg);
         renderer.clear();
         let mut i = 0;

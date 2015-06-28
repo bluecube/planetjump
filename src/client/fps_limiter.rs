@@ -1,6 +1,6 @@
 extern crate sdl2;
 
-static FPS_SMOOTHING: f32 = 0.9;
+static FPS_SMOOTHING: f32 = 0.99;
 
 pub struct FpsLimiter {
     target_frame_time: u32,
@@ -10,9 +10,9 @@ pub struct FpsLimiter {
 
 /// Iterate over frames, returning miliseconds spent on last frame
 impl Iterator for FpsLimiter {
-    type Item = u32;
+    type Item = (u32, f32);
 
-    fn next(&mut self) -> Option<u32> {
+    fn next(&mut self) -> Option<(u32, f32)> {
         let now1 = sdl2::timer::get_ticks();
         let elapsed1 = now1 - self.last_tick;
 
@@ -26,7 +26,7 @@ impl Iterator for FpsLimiter {
         let fps_raw = 1000.0 / (elapsed2 as f32);
         self.fps = (1.0 - FPS_SMOOTHING) * fps_raw + FPS_SMOOTHING * self.fps;
 
-        Some(elapsed2)
+        Some((elapsed2, self.fps))
     }
 
     fn size_hint(&self) -> (usize, Option<usize>) {
@@ -39,10 +39,5 @@ impl FpsLimiter {
         FpsLimiter { target_frame_time: (1000.0 / (target_fps as f32)) as u32,
                      last_tick: sdl2::timer::get_ticks(),
                      fps: target_fps as f32 }
-    }
-
-    /// Return current smoothed FPS
-    pub fn get_fps(&self) -> f32 {
-        self.fps
     }
 }
