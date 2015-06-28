@@ -4,7 +4,7 @@ const FIRST_GLYPH: usize = 32;
 const GLYPH_COUNT: usize = 96;
 const GLYPH_HEIGHT: usize = 9;
 const GLYPH_ASCENT: u32 = 7;
-const GLYPH_SPACING: i32 = 1;
+const GLYPH_SPACING: u32 = 1;
 
 #[derive(Copy,Clone,Debug)]
 struct Glyph (u8, [u8; GLYPH_HEIGHT]);
@@ -109,16 +109,16 @@ const GLYPHS: [Glyph; GLYPH_COUNT] = [
 ];
 
 impl Glyph {
-    fn draw(self, drawer: &mut sdl2::render::RenderDrawer,
-            x: i32, y: i32, scale: i32) {
+    fn draw(self, renderer: &mut sdl2::render::Renderer,
+            x: i32, y: i32, scale: u32) {
         for (i, bits) in self.1.into_iter().enumerate() {
             for j in 0..8 {
                 if bits & (1 << j) != 0 {
                     let box_size = (9 * scale + 5) / 10 - 1;
-                    let rect = sdl2::rect::Rect::new(x + ((j as i32) * scale),
-                                                     y + ((i as i32) * scale),
-                                                     box_size, box_size);
-                    drawer.fill_rect(rect);
+                    let rect = sdl2::rect::Rect::new_unwrap(x + (j as u32 * scale) as i32,
+                                                            y + (i as u32 * scale) as i32,
+                                                            box_size, box_size);
+                    renderer.fill_rect(rect);
                 }
             }
         }
@@ -140,24 +140,25 @@ impl Glyph {
 }
 
 pub fn draw_text(text: &str,
-                 drawer: &mut sdl2::render::RenderDrawer,
-                 x: i32, y: i32, scale: i32) {
+                 renderer: &mut sdl2::render::Renderer,
+                 x: i32, y: i32, scale: u32) {
     let mut cursor_x = x;
     for glyph in text.chars().map(Glyph::find_by_char) {
-        glyph.draw(drawer, cursor_x, y, scale);
-        cursor_x += (glyph.0 as i32) * scale
+        glyph.draw(renderer, cursor_x, y, scale);
+        cursor_x += (glyph.0 as u32 * scale) as i32
     }
 }
 
-pub fn measure_text(text: &str, scale: i32) -> sdl2::rect::Rect {
-    let mut cursor_x = -GLYPH_SPACING * scale;
+pub fn measure_text(text: &str, scale: u32) -> sdl2::rect::Rect {
+    let mut cursor_x = 0;
     for glyph in text.chars().map(Glyph::find_by_char) {
-        cursor_x += (glyph.0 as i32) * scale
+        cursor_x += glyph.0 as u32 * scale;
     }
+    cursor_x -= GLYPH_SPACING * scale;
 
-    sdl2::rect::Rect::new(0, 0, cursor_x, (GLYPH_HEIGHT as i32) * scale)
+    sdl2::rect::Rect::new_unwrap(0, 0, cursor_x, GLYPH_HEIGHT as u32 * scale)
 }
 
-pub fn line_spacing(scale: i32) -> i32 {
-    scale * GLYPH_HEIGHT as i32
+pub fn line_spacing(scale: u32) -> i32 {
+    (scale * GLYPH_HEIGHT as u32) as i32
 }

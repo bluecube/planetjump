@@ -5,7 +5,7 @@ extern crate rand;
 use states;
 use states::{State, UpdateResult};
 use sdl2::event::Event;
-use sdl2::keycode::KeyCode;
+use sdl2::keyboard::Keycode;
 use std;
 
 use font;
@@ -26,21 +26,21 @@ impl State for InMenu {
             return;
         }
         match event {
-            Event::KeyDown {keycode: KeyCode::Up, .. } => {
+            Event::KeyDown { keycode: Some(Keycode::Up), .. } => {
                 if self.selected > 0 {
                     self.selected -= 1;
                 }
             },
-            Event::KeyDown {keycode: KeyCode::Down, .. } => {
+            Event::KeyDown { keycode: Some(Keycode::Down), .. } => {
                 if self.selected < self.options.len() - 1 {
                     self.selected += 1;
                 }
             }
-            Event::KeyDown {keycode: KeyCode::Return, .. } |
-            Event::KeyDown {keycode: KeyCode::Space, .. } => {
+            Event::KeyDown {keycode: Some(Keycode::Return), .. } |
+            Event::KeyDown {keycode: Some(Keycode::Space), .. } => {
                 self.enter = true;
             }
-            Event::KeyDown {keycode: KeyCode::Escape, .. } => {
+            Event::KeyDown {keycode: Some(Keycode::Escape), .. } => {
                 self.exit = true;
             }
             _ => {}
@@ -48,20 +48,17 @@ impl State for InMenu {
     }
 
     fn update(&mut self, renderer: &mut sdl2::render::Renderer) -> UpdateResult {
-        {
-            let mut drawer = renderer.drawer();
-            drawer.set_draw_color(colors::bg);
-            drawer.clear();
-            let mut i = 0;
-            for (i, tuple) in self.options.iter().enumerate() {
-                let text = tuple.0;
-                drawer.set_draw_color(if i == self.selected { colors::highlight } else { colors::fg });
-                //let rect = font::measure_text(text, 5);
-                let scale = 5;
-                font::draw_text(text, &mut drawer, 10, 10 + font::line_spacing(scale) * i as i32, scale);
-            }
-            drawer.present();
+        renderer.set_draw_color(colors::bg);
+        renderer.clear();
+        let mut i = 0;
+        for (i, tuple) in self.options.iter().enumerate() {
+            let text = tuple.0;
+            renderer.set_draw_color(if i == self.selected { colors::highlight } else { colors::fg });
+            //let rect = font::measure_text(text, 5);
+            let scale = 5;
+            font::draw_text(text, renderer, 10, 10 + font::line_spacing(scale) * i as i32, scale);
         }
+        renderer.present();
 
         if self.enter {
             self.enter = false;

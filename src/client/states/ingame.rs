@@ -5,7 +5,7 @@ extern crate rand;
 use states;
 use states::{State, UpdateResult};
 use sdl2::event::Event;
-use sdl2::keycode::KeyCode;
+use sdl2::keyboard::Keycode;
 use std;
 use std::rc::Rc;
 
@@ -33,7 +33,7 @@ enum Action {
 impl State for InGame {
     fn handle(&mut self, event: Event) {
         match event {
-            Event::KeyDown {keycode: KeyCode::Escape, .. } => {
+            Event::KeyDown {keycode: Some(Keycode::Escape), .. } => {
                 self.action = Action::Exit;
             }
             _ => {}
@@ -47,11 +47,10 @@ impl State for InGame {
         self.step = 1 - self.step;
         self.tree.update(self.step);
 
-        let mut drawer = renderer.drawer();
-        drawer.set_draw_color(colors::bg);
-        drawer.clear();
-        draw_particles(&self.tree, self.step, &mut drawer);
-        drawer.present();
+        renderer.set_draw_color(colors::bg);
+        renderer.clear();
+        draw_particles(&self.tree, self.step, renderer);
+        renderer.present();
 
         UpdateResult::Stay
     }
