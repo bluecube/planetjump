@@ -5,6 +5,7 @@ mod particle_drawing;
 mod fps_limiter;
 mod states;
 mod font;
+mod font_data;
 mod colors;
 
 use fps_limiter::*;
