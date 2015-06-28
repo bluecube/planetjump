@@ -12,7 +12,7 @@ pub enum Tree<ParticleType: HasParticleProperties> {
 }
 
 pub struct InnerNode<ParticleType: HasParticleProperties> {
-    bounding_box: [BoundingBox; 2],
+    pub bounding_box: [BoundingBox; 2],
     gravity_mass: f32,
     pub left_child: Box<Tree<ParticleType>>,
     pub right_child: Box<Tree<ParticleType>>,

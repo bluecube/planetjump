@@ -102,7 +102,7 @@ pub fn new_game(renderer: &sdl2::render::Renderer) -> Box<InGame> {
                   &mut particles);
     add_particles(70,
                   Vector2D::new(600.0, 400.0), 20.0,
-                  Vector2D::new(-5.0, 10.0), 0.0,
+                  Vector2D::new(-5.0, 5.0), 0.0,
                   &particle_types[0],
                   &mut particles);
     add_particles(50,
