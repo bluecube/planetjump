@@ -39,14 +39,14 @@ pub fn draw_text(text: &str,
     let mut cursor_x = x;
     for glyph in text.chars().map(Glyph::find_by_char) {
         glyph.draw(renderer, cursor_x, y, scale);
-        cursor_x += (glyph.0 as u32 * scale) as i32
+        cursor_x += (glyph.0 as u32 * scale / GLYPH_FP_MULTIPLIER) as i32
     }
 }
 
 pub fn measure_text(text: &str, scale: u32) -> (u32, u32) {
     let mut cursor_x = 0;
     for glyph in text.chars().map(Glyph::find_by_char) {
-        cursor_x += glyph.0 as u32 * scale;
+        cursor_x += glyph.0 as u32 * scale / GLYPH_FP_MULTIPLIER;
     }
     cursor_x -= GLYPH_SPACING * scale;
 
