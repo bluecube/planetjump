@@ -43,10 +43,6 @@ impl Iterator for FpsLimiter {
 
         Some((elapsed as u32, self.fps))
     }
-
-    fn size_hint(&self) -> (usize, Option<usize>) {
-        (0, None)
-    }
 }
 
 impl FpsLimiter {
