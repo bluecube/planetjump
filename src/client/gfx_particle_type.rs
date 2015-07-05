@@ -116,6 +116,6 @@ impl GfxParticleType {
 }
 
 pub fn load_particle_types<'a>(renderer: &'a sdl2::render::Renderer,
-                               definitions: Vec<ParticleTypeDefinition>) -> Vec<Rc<GfxParticleType>> {
-    definitions.into_iter().map(|definition| Rc::new(GfxParticleType::new(renderer, definition))).collect()
+                               definitions: Vec<ParticleTypeDefinition>) -> Vec<GfxParticleType> {
+    definitions.into_iter().map(|definition| GfxParticleType::new(renderer, definition)).collect()
 }

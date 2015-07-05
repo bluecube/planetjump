@@ -1,27 +1,21 @@
 extern crate sdl2;
-extern crate shared;
-extern crate rand;
 
 use states;
 use states::{State, UpdateResult};
 use sdl2::event::Event;
 use sdl2::keyboard::Keycode;
-use std;
-use std::rc::Rc;
 
 use gfx_particle_type::*;
 use particle_drawing::*;
-use self::shared::geometry::*;
-use self::shared::physics::particle::*;
-use self::shared::physics::tree::*;
+
+use shared::game_state::*;
+use shared::particle_definitions::*;
 
 use font;
 use colors;
 
 pub struct InGame {
-    particle_types: Vec<Rc<GfxParticleType>>,
-    tree: Tree<GfxParticleType>,
-    step: u8,
+    game: GameState<GfxParticleType>,
     action: Action,
 }
 
@@ -46,13 +40,13 @@ impl State for InGame {
         if let Action::Exit = self.action {
             return UpdateResult::Reset(states::inmenu::in_main_menu());
         }
-        self.step = 1 - self.step;
-        self.tree.update(self.step);
+
+        self.game.update();
 
         renderer.set_draw_color(colors::bg);
         renderer.clear();
         draw_fps(fps, renderer);
-        draw_particles(&self.tree, self.step, renderer);
+        draw_particles(&self.game.particles, self.game.step, renderer);
         renderer.present();
 
         UpdateResult::Stay
@@ -73,48 +67,12 @@ fn draw_fps(fps: f32, renderer: &mut sdl2::render::Renderer) {
     font::draw_text(text, renderer, (screen_w - font_w) as i32, 0, scale);
 }
 
-fn add_particles(count: u32,
-                 position: Vector2D, pos_range: f32,
-                 velocity: Vector2D, vel_range: f32,
-                 particle_type: &Rc<GfxParticleType>,
-                 out: &mut Vec<Particle<GfxParticleType>>) {
-    let mut rng = rand::weak_rng();
-
-    for _ in 0..count {
-        let pos = Vector2D::random_radius(&mut rng, position, pos_range);
-        let vel = Vector2D::random_radius(&mut rng, velocity, vel_range);
-
-        let p = Particle::<GfxParticleType>::new(pos, vel, 0, particle_type.clone());
-
-        out.push(p);
-    }
-}
-
 
 pub fn new_game(renderer: &sdl2::render::Renderer) -> Box<InGame> {
     let particle_types = load_particle_types(&renderer,
-                                             shared::particle_definitions::particle_types());
-    let mut particles = Vec::<Particle<GfxParticleType>>::new();
-    add_particles(100,
-                  Vector2D::new(400.0, 400.0), 40.0,
-                  Vector2D::new(-2.0, -1.0), 0.0,
-                  &particle_types[2],
-                  &mut particles);
-    add_particles(70,
-                  Vector2D::new(600.0, 400.0), 20.0,
-                  Vector2D::new(-5.0, 5.0), 0.0,
-                  &particle_types[0],
-                  &mut particles);
-    add_particles(50,
-                  Vector2D::new(700.0, 300.0), 20.0,
-                  Vector2D::new(10.0, 5.0), 0.0,
-                  &particle_types[1],
-                  &mut particles);
-
+                                             particle_types());
     Box::new(InGame {
-        particle_types: particle_types,
-        tree: Tree::new(particles, 0),
-        step: 0,
+        game: GameState::<GfxParticleType>::new(particle_types),
         action: Action::None
     })
 }
