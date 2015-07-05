@@ -1,10 +1,8 @@
-extern crate shared;
-extern crate sdl2;
-
 use gfx_particle_type::*;
-use self::shared::physics::tree::*;
-use self::shared::physics::traits::*;
+use shared::physics::tree::*;
+use shared::physics::traits::*;
 use sdl2::render::Renderer;
+use sdl2;
 
 use colors;
 

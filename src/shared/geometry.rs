@@ -1,7 +1,5 @@
-extern crate rand;
-
 use std::ops::*;
-use self::rand::Rng;
+use rand::Rng;
 use std::f32;
 
 #[derive(PartialEq,Clone,Copy,Debug,Default)]

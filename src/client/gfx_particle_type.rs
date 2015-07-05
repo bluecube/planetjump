@@ -1,13 +1,11 @@
-extern crate shared;
-
 use std::rc::Rc;
 
 use sdl2;
 
-use self::shared::physics::particle::*;
-use self::shared::physics::traits::*;
+use shared::physics::particle::*;
+use shared::physics::traits::*;
 
-use self::shared::particle_definitions::*;
+use shared::particle_definitions::*;
 
 pub struct GfxParticleType {
     base: BasicParticleType,
