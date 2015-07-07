@@ -6,11 +6,13 @@ use physics::forces::*;
 use std::cell::UnsafeCell;
 use std::cmp::Ordering;
 
+#[derive(Debug)]
 pub enum Tree<ParticleType: HasParticleProperties> {
     InnerNode (InnerNode<ParticleType>),
     LeafNode (Particle<ParticleType>)
 }
 
+#[derive(Debug)]
 pub struct InnerNode<ParticleType: HasParticleProperties> {
     pub bounding_box: [BoundingBox; 2],
     gravity_mass: f32,

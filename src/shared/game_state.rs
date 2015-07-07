@@ -6,11 +6,12 @@ use geometry::*;
 use std::rc::Rc;
 use rand;
 
+#[derive(Debug)]
 pub struct GameState<T: HasParticleProperties> {
     pub particles: Tree<T>,
     pub step: u8,
 
-    particle_types: Vec<Rc<T>>,
+    pub particle_types: Vec<Rc<T>>,
 }
 
 impl<T: HasParticleProperties> GameState<T> {
