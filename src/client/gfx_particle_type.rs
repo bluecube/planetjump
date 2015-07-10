@@ -6,6 +6,8 @@ use shared::physics::particle::*;
 use shared::physics::traits::*;
 use shared::particle_definitions::*;
 
+use raytrace;
+
 use texture_generator;
 
 pub struct GfxParticleType {
@@ -58,6 +60,7 @@ impl GfxParticleType {
         let inner_threshold = 0.15 * 0.15;
         let outer_threshold = 0.5 * 0.5;
 
+/*
         let texture = texture_generator::generate(renderer,
                                                   size, size,
                                                   |x, y| {
@@ -74,7 +77,11 @@ impl GfxParticleType {
                                                           0
                                                       };
                                                       (r, g, b, alpha)
-                                                  }).unwrap();
+                                                  }).unwrap();*/
+        let scene = raytrace::objects::Sphere().transform(raytrace::geometry::Vector3D::new(0, 0, 10));
+        let texture = texture_generator::generate(renderer, size, size,
+            |x, y| raytrace::render(scene, 1.0, x, y));
+                
         (texture, size)
     }
 
