@@ -4,8 +4,9 @@ use sdl2;
 
 use shared::physics::particle::*;
 use shared::physics::traits::*;
-
 use shared::particle_definitions::*;
+
+use texture_generator;
 
 pub struct GfxParticleType {
     base: BasicParticleType,
@@ -44,59 +45,37 @@ impl GfxParticleType {
     }
 
     /// Renders texture for a particle.
-    /// `size` is the logical particle size, the texture will be larger.
+    /// `particle_size` is the logical particle size, the texture will be larger.
     ///
     /// Returns tuple with the (square) texture and half of its size (offset for drawing).
     ///
     /// Panicks if texture creation fails.
     fn make_texture<'a>(renderer: &'a sdl2::render::Renderer,
-                        size: f32,
+                        particle_size: f32,
                         color: (u8, u8, u8, u8)) -> (sdl2::render::Texture, u32) {
         let (r, g, b, a) = color;
-        let inside_radius = size.round() as u32;
-        let glow_radius = 4 * inside_radius;
+        let size = (2.0 * 4.0 * particle_size).round() as u32;
+        let inner_threshold = 0.15 * 0.15;
+        let outer_threshold = 0.5 * 0.5;
 
-        let size = 2 * glow_radius;
-        let glow_threshold = glow_radius * glow_radius;
-        let inside_threshold = inside_radius * inside_radius;
-        let pitch = size as usize * 4;
-        let mut pixels = Vec::with_capacity(size as usize * pitch);
-        for y in 0..size {
-            let dy = y as i32 - glow_radius as i32;
-            for x in 0..size {
-                let dx = x as i32 - glow_radius as i32;
-
-                // This is a little more complicated, bexause the expression
-                // is actually an expansion of (dx + 0.5)**2 + (dy + 0.5)**2 - 0.5
-                let r2 = (dx * dx + dy * dy + dx + dy) as u32;
-
-                let alpha = if r2 < inside_threshold {
-                    a
-                }
-                else if r2 < glow_threshold {
-                    let a32 = a as u32;
-                    let tmp1 = glow_threshold - r2;
-                    let tmp2 = glow_threshold - inside_threshold;
-                    ((a32 * tmp1 * tmp1) / (2 * tmp2 * tmp2)) as u8
-                }
-                else {
-                    0
-                };
-
-                // Why does this have to be reversed? Who knows.
-                pixels.push(alpha);
-                pixels.push(b);
-                pixels.push(g);
-                pixels.push(r);
-            }
-        }
-
-        let mut texture = renderer.create_texture_static(sdl2::pixels::PixelFormatEnum::RGBA8888,
-                                                         (size, size)).unwrap();
-        texture.set_blend_mode(sdl2::render::BlendMode::Blend);
-        texture.update(None, &pixels, pitch).unwrap();
-
-        (texture, glow_radius)
+        let texture = texture_generator::generate(renderer,
+                                                  size, size,
+                                                  |x, y| {
+                                                      let r2 = x * x + y * y;
+                                                      let alpha = if r2 < inner_threshold {
+                                                           a
+                                                      }
+                                                      else if r2 < outer_threshold {
+                                                          let a_float = a as f32;
+                                                          let multiplier = (outer_threshold - r2) / (outer_threshold - inner_threshold);
+                                                          (a_float * multiplier / 2.0) as u8
+                                                      }
+                                                      else {
+                                                          0
+                                                      };
+                                                      (r, g, b, alpha)
+                                                  }).unwrap();
+        (texture, size)
     }
 
     pub fn draw(&self, renderer: &mut sdl2::render::Renderer, x: i32, y: i32) {

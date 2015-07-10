@@ -8,6 +8,7 @@ mod states;
 mod font;
 mod font_data;
 mod colors;
+mod texture_generator;
 
 use fps_limiter::*;
 use sdl2::pixels::Color;
