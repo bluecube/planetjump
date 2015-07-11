@@ -75,7 +75,7 @@ impl GfxParticleType {
                                                       };
                                                       (r, g, b, alpha)
                                                   }).unwrap();
-        (texture, size)
+        (texture, size / 2)
     }
 
     pub fn draw(&self, renderer: &mut sdl2::render::Renderer, x: i32, y: i32) {
