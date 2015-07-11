@@ -42,7 +42,7 @@ pub fn main() {
                 new_state.init(Some(state));
                 state = new_state;
             },
-            states::UpdateResult::Back(Some(mut new_state)) => {
+            states::UpdateResult::Back(Some(new_state)) => {
                 state = new_state;
                 // We're not setting previous state because this already is the previous
             },

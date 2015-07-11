@@ -1,4 +1,4 @@
-extern crate sdl2;
+use sdl2;
 
 use states;
 use states::{State, UpdateResult};
