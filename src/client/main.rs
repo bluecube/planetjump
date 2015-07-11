@@ -1,5 +1,6 @@
 extern crate sdl2;
 extern crate shared;
+extern crate rand;
 
 mod gfx_particle_type;
 mod particle_drawing;
@@ -9,6 +10,7 @@ mod font;
 mod font_data;
 mod colors;
 mod texture_generator;
+mod graphics;
 
 use fps_limiter::*;
 use sdl2::pixels::Color;

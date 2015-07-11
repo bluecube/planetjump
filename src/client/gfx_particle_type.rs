@@ -5,6 +5,7 @@ use sdl2;
 use shared::physics::particle::*;
 use shared::physics::traits::*;
 use shared::particle_definitions::*;
+use graphics;
 
 use texture_generator;
 
@@ -53,29 +54,12 @@ impl GfxParticleType {
     fn make_texture<'a>(renderer: &'a sdl2::render::Renderer,
                         particle_size: f32,
                         color: (u8, u8, u8, u8)) -> (sdl2::render::Texture, u32) {
-        let (r, g, b, a) = color;
         let size = (2.0 * 4.0 * particle_size).round() as u32;
-        let inner_threshold = 0.15 * 0.15;
-        let outer_threshold = 0.5 * 0.5;
 
         let texture = texture_generator::generate(renderer,
                                                   size, size,
-                                                  |x, y| {
-                                                      let r2 = x * x + y * y;
-                                                      let alpha = if r2 < inner_threshold {
-                                                           a
-                                                      }
-                                                      else if r2 < outer_threshold {
-                                                          let a_float = a as f32;
-                                                          let multiplier = (outer_threshold - r2) / (outer_threshold - inner_threshold);
-                                                          (a_float * multiplier / 2.0) as u8
-                                                      }
-                                                      else {
-                                                          0
-                                                      };
-                                                      (r, g, b, alpha)
-                                                  }).unwrap();
-        (texture, size / 2)
+                                                  |x, y| graphics::particle(color, x, y));
+        (texture.unwrap(), size / 2)
     }
 
     pub fn draw(&self, renderer: &mut sdl2::render::Renderer, x: i32, y: i32) {
